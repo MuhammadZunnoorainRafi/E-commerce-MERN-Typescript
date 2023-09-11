@@ -1,13 +1,22 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './components/shared/Navbar';
+import Footer from './components/shared/Footer';
+
+import useLocalStorage from 'use-local-storage';
 
 function App() {
+  const [darkMode, setDarkMode] = useLocalStorage('theme', false);
   return (
-    <div>
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
+    <div
+      className={`${darkMode ? 'dark' : 'light'} text-foreground bg-background`}
+    >
+      <div className=" flex flex-col justify-between min-h-screen ">
+        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+        <main className="mt-2 max-w-5xl mx-auto">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

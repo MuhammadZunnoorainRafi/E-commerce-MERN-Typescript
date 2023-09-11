@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input[type='file']::file-selector-button {
+  border: 2px solid gray;
+  padding: 0em 0.4em;
+
+  border-radius: 0.5em 0.5rem 0.5rem 0.5rem;
+
+  background-color: gray;
+  transition: 0.5s;
+  color: #f5f5f5;
+  margin-top: 0.15rem;
+}
+
+input[type='file']::file-selector-button:hover {
+  background-color: #b4b7b7;
+  border: 2px solid #9b9b9b;
+}

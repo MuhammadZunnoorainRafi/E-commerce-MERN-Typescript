@@ -11,6 +11,7 @@ import {
 import Login from './pages/Login.tsx';
 import Register from './pages/Register.tsx';
 import Home from './pages/Home.tsx';
+import { NextUIProvider } from '@nextui-org/react';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,8 @@ const router = createBrowserRouter(
 );
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <NextUIProvider>
+      <RouterProvider router={router} />
+    </NextUIProvider>
   </React.StrictMode>
 );
