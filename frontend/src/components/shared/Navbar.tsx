@@ -18,7 +18,8 @@ export default function TNavbar({
   setDarkMode,
   darkMode,
 }: {
-  setDarkMode: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setDarkMode: any;
   darkMode: boolean;
 }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -38,7 +39,7 @@ export default function TNavbar({
 
   return (
     <Navbar
-      className="border-b border-default-100 px-5"
+      className="border-b border-default-100  md:px-5"
       maxWidth="full"
       onMenuOpenChange={setIsMenuOpen}
     >
@@ -96,7 +97,7 @@ export default function TNavbar({
           </Button>
         </NavbarItem>
       </NavbarContent>
-      <NavbarMenu className="dark bg-slate-900">
+      <NavbarMenu className="dark bg-slate-900 text-slate-100">
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
             <Link

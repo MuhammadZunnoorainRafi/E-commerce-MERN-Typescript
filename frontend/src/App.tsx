@@ -10,11 +10,13 @@ function App() {
     <div
       className={`${darkMode ? 'dark' : 'light'} text-foreground bg-background`}
     >
-      <div className=" flex flex-col justify-between min-h-screen ">
+      <div className=" flex flex-col justify-between min-h-screen  ">
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-        <main className="mt-2 max-w-5xl mx-auto">
-          <Outlet />
-        </main>
+        <div>
+          <main className="mt-2 max-w-5xl mx-auto px-2 md:px-0">
+            <Outlet />
+          </main>
+        </div>
         <Footer />
       </div>
     </div>

@@ -38,20 +38,7 @@
       ],
       "deleted": true
     },
-    {
-      "id": 3,
-      "title": "Samsung Universe 9",
-      "description": "Samsung's new variant which goes beyond Galaxy to the Universe",
-      "price": 1249,
-      "discountPercentage": 15.46,
-      "rating": 4.09,
-      "stock": 36,
-      "brand": "Samsung",
-      "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/3/thumbnail.jpg",
-      "images": ["https://i.dummyjson.com/data/products/3/1.jpg"],
-      "deleted": true
-    },
+
     {
       "id": 4,
       "title": "OPPOF19",
@@ -70,23 +57,7 @@
         "https://i.dummyjson.com/data/products/4/thumbnail.jpg"
       ]
     },
-    {
-      "id": 5,
-      "title": "Huawei P30",
-      "description": "Huawei’s re-badged P30 Pro New Edition was officially unveiled yesterday in Germany and now the device has made its way to the UK.",
-      "price": 499,
-      "discountPercentage": 10.58,
-      "rating": 4.09,
-      "stock": 32,
-      "brand": "Huawei",
-      "category": "smartphones",
-      "thumbnail": "https://i.dummyjson.com/data/products/5/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/5/1.jpg",
-        "https://i.dummyjson.com/data/products/5/2.jpg",
-        "https://i.dummyjson.com/data/products/5/3.jpg"
-      ]
-    },
+
     {
       "id": 6,
       "title": "MacBook Pro",
@@ -365,40 +336,7 @@
         "https://i.dummyjson.com/data/products/20/thumbnail.jpg"
       ]
     },
-    {
-      "id": 21,
-      "title": "- Daal Masoor 500 grams",
-      "description": "Fine quality Branded Product Keep in a cool and dry place",
-      "price": 20,
-      "discountPercentage": 4.81,
-      "rating": 4.44,
-      "stock": 133,
-      "brand": "Saaf & Khaas",
-      "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/21/thumbnail.png",
-      "images": [
-        "https://i.dummyjson.com/data/products/21/1.png",
-        "https://i.dummyjson.com/data/products/21/2.jpg",
-        "https://i.dummyjson.com/data/products/21/3.jpg"
-      ]
-    },
-    {
-      "id": 22,
-      "title": "Elbow Macaroni - 400 gm",
-      "description": "Product details of Bake Parlor Big Elbow Macaroni - 400 gm",
-      "price": 14,
-      "discountPercentage": 15.58,
-      "rating": 4.57,
-      "stock": 146,
-      "brand": "Bake Parlor Big",
-      "category": "groceries",
-      "thumbnail": "https://i.dummyjson.com/data/products/22/thumbnail.jpg",
-      "images": [
-        "https://i.dummyjson.com/data/products/22/1.jpg",
-        "https://i.dummyjson.com/data/products/22/2.jpg",
-        "https://i.dummyjson.com/data/products/22/3.jpg"
-      ]
-    },
+
     {
       "id": 23,
       "title": "Orange Essence Food Flavou",

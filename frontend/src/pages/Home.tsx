@@ -7,6 +7,7 @@ import {
   Checkbox,
   Image,
   Select,
+  SelectItem,
 } from '@nextui-org/react';
 import {
   brands,
@@ -20,36 +21,19 @@ import { products } from '../../data.json';
 function Home() {
   return (
     <div>
-      <div>
-        <h1 className="font-bold text-2xl ">All Products</h1>
-        <div>
-          <Select label="Select an animal" className="max-w-xs">
-            {sortOptions.map((val) => (
-              <SelectItem key={val.name} value={animal.value}>
-                {animal.label}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
+      <div className="flex items-center mt-3 pb-4 mb-5 border-b border-b-default-200 justify-between">
+        <h1 className=" font-bold text-2xl ">All Products</h1>
+        <Select label="Sort" size="sm" className="max-w-[11rem]">
+          {sortOptions.map((val) => (
+            <SelectItem key={val.name} value={val.name}>
+              {val.name}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
-      <div className="grid grid-cols-4">
-        <div className=" col-span-1">
+      <div className="grid grid-cols-5 md:grid-cols-4">
+        <div className=" col-span-2 md:col-span-1">
           <Accordion>
-            <AccordionItem
-              className="space-y-1"
-              key="color"
-              aria-label="Color"
-              indicator={({ isOpen }) => (isOpen ? <RxCross2 /> : <RxPlus />)}
-              title="Color"
-            >
-              {colors.map((val) => {
-                return (
-                  <Checkbox key={val.label} size="sm" className="block">
-                    {val.label}
-                  </Checkbox>
-                );
-              })}
-            </AccordionItem>
             <AccordionItem
               className="space-y-1"
               key="categories"
@@ -80,9 +64,24 @@ function Home() {
                 );
               })}
             </AccordionItem>
+            <AccordionItem
+              className="space-y-1"
+              key="color"
+              aria-label="Color"
+              indicator={({ isOpen }) => (isOpen ? <RxCross2 /> : <RxPlus />)}
+              title="Color"
+            >
+              {colors.map((val) => {
+                return (
+                  <Checkbox key={val.label} size="sm" className="block">
+                    {val.label}
+                  </Checkbox>
+                );
+              })}
+            </AccordionItem>
           </Accordion>
         </div>
-        <div className="col-span-3 grid grid-cols-3 gap-3 place-items-center">
+        <div className="col-span-3 md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3 place-items-center">
           {products.map((val) => {
             return (
               <Card className="h-[440px] hover:scale-[1.02] cursor-pointer hover:shadow-2xl flex flex-col">
