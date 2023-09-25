@@ -1,0 +1,59 @@
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import prismaDB from '../config/prismaDB';
+import asyncHandler from 'express-async-handler';
+
+interface IUserType {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  image: string;
+  isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IReqWithUser extends Request {
+  user?: IUserType;
+}
+
+interface IDecodedToken {
+  id: string;
+}
+
+export const protect = asyncHandler(
+  async (req: IReqWithUser, res: Response, next: NextFunction) => {
+    let token;
+    const { authorization } = req.headers;
+    if (authorization && authorization.startsWith('Bearer')) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        token = authorization.split(' ')[1];
+        const decodedToken = jwt.verify(
+          token,
+          process.env.JWT_SECRET!
+        ) as IDecodedToken;
+        req.user = (await prismaDB.user.findUnique({
+          where: { id: decodedToken.id },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            isAdmin: true,
+          },
+        })) as IUserType;
+
+        next();
+      } catch (error) {
+        res.status(400);
+        throw new Error('Not Authorized');
+      }
+    }
+    if (!token) {
+      res.status(401);
+      throw new Error('Token not found');
+    }
+  }
+);
