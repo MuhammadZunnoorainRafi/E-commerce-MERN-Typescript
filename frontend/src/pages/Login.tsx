@@ -2,6 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
 import { useForm } from 'react-hook-form';
 import { ZodType, z } from 'zod';
+import { useLogQueryHook } from '../hooks/userReactQueryHooks';
+import { toast } from 'sonner';
+import { type IError, errorHandler } from '../utils/errorHandler';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../hooks/RTKHooks';
+import { loginUser } from '../Slices/authSlice';
 
 type formType = {
   email: string;
@@ -16,11 +22,21 @@ const schema: ZodType<formType> = z.object({
     .min(6, 'Password must be above 5 characters'),
 });
 
-const formSubmit = (data: formType) => {
-  console.log(data);
-};
-
 function Login() {
+  const { mutateAsync, isLoading } = useLogQueryHook();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const formSubmit = async (data: formType) => {
+    try {
+      const logUser = await mutateAsync(data);
+      toast.success(`${logUser.name} logged in`);
+      dispatch(loginUser(logUser));
+      logUser.isAdmin ? navigate('/admin') : navigate('/');
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    }
+  };
   const {
     handleSubmit,
     register,
@@ -29,8 +45,8 @@ function Login() {
     resolver: zodResolver(schema),
   });
   return (
-    <div>
-      <h1 className="font-bold text-2xl text-center mb-3">Login to Trendzy</h1>
+    <div className="space-y-5">
+      <h1 className="font-bold text-2xl text-center ">Login to Trendzy</h1>
       <form
         className="flex max-w-xl mx-auto flex-col space-y-3"
         onSubmit={handleSubmit(formSubmit)}
@@ -59,10 +75,18 @@ function Login() {
           size="lg"
           type="submit"
           color="primary"
+          isDisabled={isLoading}
+          isLoading={isLoading}
         >
           Login
         </Button>
       </form>
+      <p className="text-center">
+        Don't have an account?{' '}
+        <Link className="text-blue-500 hover:text-blue-800" to="/register">
+          Sign Up
+        </Link>
+      </p>
     </div>
   );
 }

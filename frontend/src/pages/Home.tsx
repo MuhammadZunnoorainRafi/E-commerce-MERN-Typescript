@@ -14,7 +14,7 @@ import {
   categories,
   colors,
   sortOptions,
-} from '../../constants/sidebarConstants';
+} from '../constants/sidebarConstants';
 import { BiSolidStar } from 'react-icons/bi';
 import { RxCross2, RxPlus } from 'react-icons/rx';
 import { products } from '../../data.json';
@@ -58,7 +58,7 @@ function Home() {
             >
               {brands.map((val) => {
                 return (
-                  <Checkbox size="sm" className="block">
+                  <Checkbox key={val.label} size="sm" className="block">
                     {val.label}
                   </Checkbox>
                 );

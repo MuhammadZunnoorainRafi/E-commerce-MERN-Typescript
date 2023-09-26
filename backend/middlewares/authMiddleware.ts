@@ -14,8 +14,20 @@ interface IUserType {
   updatedAt: Date;
 }
 
+interface IAdminType {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  image: string;
+  isAdmin: true;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IReqWithUser extends Request {
   user?: IUserType;
+  admin?: IAdminType;
 }
 
 interface IDecodedToken {
@@ -44,6 +56,17 @@ export const protect = asyncHandler(
             isAdmin: true,
           },
         })) as IUserType;
+
+        req.admin = (await prismaDB.user.findUnique({
+          where: { id: decodedToken.id, isAdmin: true },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            isAdmin: true,
+          },
+        })) as IAdminType;
 
         next();
       } catch (error) {

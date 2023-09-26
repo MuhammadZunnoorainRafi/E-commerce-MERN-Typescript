@@ -2,16 +2,31 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { Provider } from 'react-redux';
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from 'react-router-dom';
-import Login from './pages/Login.tsx';
-import Register from './pages/Register.tsx';
-import Home from './pages/Home.tsx';
 import { NextUIProvider } from '@nextui-org/react';
+import Login from './pages/Login.tsx';
+import Home from './pages/Home.tsx';
+import Register from './pages/Register.tsx';
+import { store } from './store.tsx';
+import axios from 'axios';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import Admin from './pages/(admin)/Admin.tsx';
+import ProtectAdmin from './protect/protectAdmin.tsx';
+import Dashboard from './pages/(admin)/Dashboard.tsx';
+import Categories from './pages/(admin)/Categories.tsx';
+import Colors from './pages/(admin)/Colors.tsx';
+import Products from './pages/(admin)/Products.tsx';
+
+axios.defaults.baseURL =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:4000/' : '';
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,13 +34,30 @@ const router = createBrowserRouter(
       <Route path="/" index={true} element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="admin"
+        element={
+          <ProtectAdmin>
+            <Admin />
+          </ProtectAdmin>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="colors" element={<Colors />} />
+        <Route path="products" element={<Products />} />
+      </Route>
     </Route>
   )
 );
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <NextUIProvider>
-      <RouterProvider router={router} />
-    </NextUIProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <NextUIProvider>
+          <RouterProvider router={router} />
+        </NextUIProvider>
+      </QueryClientProvider>
+    </Provider>
   </React.StrictMode>
 );

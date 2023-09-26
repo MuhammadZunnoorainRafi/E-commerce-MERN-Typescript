@@ -1,19 +1,27 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
 import { useForm } from 'react-hook-form';
-import { ZodType, z } from 'zod';
+import { z } from 'zod';
+import { useRegQueryHook } from '../hooks/userReactQueryHooks';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../hooks/RTKHooks';
+import { Link, useNavigate } from 'react-router-dom';
+import { registerUser } from '../Slices/authSlice';
+import { toast } from 'sonner';
+import { type IError, errorHandler } from '../utils/errorHandler';
 
 type formType = {
-  image?: string;
+  image: string;
   name: string;
   email: string;
   password: string;
   password2: string;
 };
 
-const schema: ZodType<formType> = z
+const schema = z
   .object({
-    image: z.any().refine((files) => files?.length == 1, 'Select an image'),
+    image: z.any().refine((files) => files?.length === 1, 'Select an image'),
     name: z.string().nonempty('Enter your name'),
     email: z.string().nonempty('Enter your email').email('Enter a valid email'),
     password: z
@@ -27,11 +35,49 @@ const schema: ZodType<formType> = z
     path: ['password2'],
   });
 
-const formSubmit = (data: formType) => {
-  console.log(data);
-};
-
 function Register() {
+  const { user } = useAppSelector((state) => state.authReducer);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { mutateAsync } = useRegQueryHook();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+  const formSubmit = async ({ name, email, image, password }: formType) => {
+    try {
+      setIsLoading(true);
+      // Cloudinary Image Upload
+      const file = image[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'sernEcommerce');
+      const imageData = await axios.post(
+        `https://api.cloudinary.com/v1_1/dk5gpbckp/image/upload`,
+        formData
+      );
+
+      const dataWithImage = {
+        name,
+        email,
+        password,
+        image: imageData.data.secure_url,
+      };
+
+      const response = await mutateAsync(dataWithImage);
+      dispatch(registerUser(response));
+      toast.success(`Welcome ${response.name}`);
+      response.isAdmin ? navigate('/admin') : navigate('/');
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const {
     handleSubmit,
     register,
@@ -40,8 +86,8 @@ function Register() {
     resolver: zodResolver(schema),
   });
   return (
-    <div>
-      <h1 className="font-bold text-2xl text-center mb-3">Register</h1>
+    <div className="space-y-5">
+      <h1 className="font-bold text-2xl text-center ">Register</h1>
       <form
         className="flex max-w-xl mx-auto flex-col space-y-3"
         onSubmit={handleSubmit(formSubmit)}
@@ -56,6 +102,7 @@ function Register() {
             type="file"
             accept="image/jpg,image/png,image/jpeg"
           />
+
           <p className="text-red-500 text-sm">{errors.image?.message}</p>
         </div>
         <div className="space-y-[0.7]">
@@ -99,10 +146,18 @@ function Register() {
           size="lg"
           type="submit"
           color="primary"
+          disabled={isLoading}
+          isLoading={isLoading}
         >
           Register
         </Button>
       </form>
+      <p className="text-center">
+        Already have an account?{' '}
+        <Link className="text-blue-500 hover:text-blue-800" to="/login">
+          Sign In
+        </Link>
+      </p>
     </div>
   );
 }

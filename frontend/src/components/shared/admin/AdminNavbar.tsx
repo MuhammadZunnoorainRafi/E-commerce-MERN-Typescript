@@ -16,11 +16,11 @@ import {
   DropdownMenu,
 } from '@nextui-org/react';
 import { BiSolidSun, BiSolidMoon } from 'react-icons/bi';
-import { Link, redirect, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
-import { logoutUser } from '../../Slices/authSlice';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../hooks/RTKHooks';
+import { logoutUser } from '../../../Slices/authSlice';
 
-export default function TNavbar({
+export default function AdminNavbar({
   setDarkMode,
   darkMode,
 }: {
@@ -46,6 +46,26 @@ export default function TNavbar({
     'Log Out',
   ];
 
+  const navbarItems = [
+    {
+      id: 1,
+      label: 'Categories',
+      path: `/admin/categories`,
+    },
+    {
+      id: 2,
+      label: 'Colors',
+      path: `/admin/colors`,
+    },
+    {
+      id: 3,
+      label: 'Products',
+      path: `/admin/products`,
+    },
+  ];
+
+  const location = useLocation();
+
   return (
     <Navbar
       className="border-b border-default-100  md:px-5"
@@ -58,28 +78,22 @@ export default function TNavbar({
           className="sm:hidden"
         />
         <NavbarBrand>
-          <Link to="/" className="font-bold text-inherit">
-            Trendzy
+          <Link to="/admin" className="font-bold text-inherit">
+            Admin-Panel
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
-        </NavbarItem>
+        {navbarItems.map((val) => {
+          return (
+            <NavbarItem isActive={location.pathname === val.path} key={val.id}>
+              <Link className="hover:text-black text-slate-700" to={val.path}>
+                {val.label}
+              </Link>
+            </NavbarItem>
+          );
+        })}
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
@@ -110,15 +124,19 @@ export default function TNavbar({
                 src={user.image}
               />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
+            <DropdownMenu
+              closeOnSelect
+              aria-label="Profile Actions"
+              variant="flat"
+            >
               <DropdownItem key="profile" className="h-14 gap-2">
                 <p className="font-semibold">Signed in as</p>
                 <p className="font-semibold">{user.email}</p>
               </DropdownItem>
               <DropdownItem className={`${user.isAdmin ? 'flex' : 'hidden'}`}>
                 {user.isAdmin && (
-                  <Link to="/admin" className="font-bold block">
-                    Admin
+                  <Link to="/" className="font-bold block">
+                    Go to Client Page
                   </Link>
                 )}
               </DropdownItem>
