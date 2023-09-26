@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IStore {
-  label: string | null;
-  adminID: string | null;
+  name: string | null;
+  userId: string | null;
 }
 
 interface IInitialState {
@@ -11,8 +11,8 @@ interface IInitialState {
 
 const initialState: IInitialState = {
   store: {
-    label: null,
-    adminID: null,
+    name: null,
+    userId: null,
   },
 };
 

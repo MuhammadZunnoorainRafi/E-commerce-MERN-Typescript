@@ -5,7 +5,7 @@ import Footer from './components/shared/Footer';
 import useLocalStorage from 'use-local-storage';
 import { useAppSelector } from './hooks/RTKHooks';
 import { Toaster } from 'sonner';
-import AdminNavbar from './components/shared/admin/AdminNavbar';
+import AdminNavbar from './components/admin/AdminNavbar';
 
 function App() {
   const [darkMode, setDarkMode] = useLocalStorage('theme', false);

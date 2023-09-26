@@ -19,6 +19,7 @@ import { BiSolidSun, BiSolidMoon } from 'react-icons/bi';
 import { Link, redirect, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { logoutUser } from '../../Slices/authSlice';
+import { storeId } from '../../utils/getStore';
 
 export default function TNavbar({
   setDarkMode,
@@ -117,13 +118,17 @@ export default function TNavbar({
               </DropdownItem>
               <DropdownItem className={`${user.isAdmin ? 'flex' : 'hidden'}`}>
                 {user.isAdmin && (
-                  <Link to="/admin" className="font-bold block">
+                  <Link to={`/admin/${storeId}`} className="font-bold block">
                     Admin
                   </Link>
                 )}
               </DropdownItem>
 
-              <DropdownItem key="settings">Profile</DropdownItem>
+              <DropdownItem key="profile">
+                <Link className="block" to="/profile">
+                  Profile
+                </Link>
+              </DropdownItem>
 
               <DropdownItem
                 onClick={() => {

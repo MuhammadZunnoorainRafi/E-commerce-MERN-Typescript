@@ -32,7 +32,7 @@ function Login() {
       const logUser = await mutateAsync(data);
       toast.success(`${logUser.name} logged in`);
       dispatch(loginUser(logUser));
-      logUser.isAdmin ? navigate('/admin') : navigate('/');
+      navigate('/');
     } catch (error) {
       toast.error(errorHandler(error as IError));
     }

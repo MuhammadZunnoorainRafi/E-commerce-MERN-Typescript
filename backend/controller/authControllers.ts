@@ -99,3 +99,5 @@ export const logController = asyncHandler(
     }
   }
 );
+
+export const updateController = asyncHandler(async (req, res) => {});

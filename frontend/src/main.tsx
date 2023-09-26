@@ -22,6 +22,7 @@ import Dashboard from './pages/(admin)/Dashboard.tsx';
 import Categories from './pages/(admin)/Categories.tsx';
 import Colors from './pages/(admin)/Colors.tsx';
 import Products from './pages/(admin)/Products.tsx';
+import Profile from './pages/Profile.tsx';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:4000/' : '';
@@ -34,8 +35,9 @@ const router = createBrowserRouter(
       <Route path="/" index={true} element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
       <Route
-        path="admin"
+        path="admin/:id"
         element={
           <ProtectAdmin>
             <Admin />

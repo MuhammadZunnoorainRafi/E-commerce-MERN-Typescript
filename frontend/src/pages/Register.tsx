@@ -71,7 +71,7 @@ function Register() {
       const response = await mutateAsync(dataWithImage);
       dispatch(registerUser(response));
       toast.success(`Welcome ${response.name}`);
-      response.isAdmin ? navigate('/admin') : navigate('/');
+      navigate('/');
     } catch (error) {
       toast.error(errorHandler(error as IError));
     } finally {

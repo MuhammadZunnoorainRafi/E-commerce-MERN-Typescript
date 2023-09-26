@@ -17,8 +17,10 @@ import {
 } from '@nextui-org/react';
 import { BiSolidSun, BiSolidMoon } from 'react-icons/bi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../hooks/RTKHooks';
-import { logoutUser } from '../../../Slices/authSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
+import { logoutUser } from '../../Slices/authSlice';
+import axios from 'axios';
+import { storeId } from '../../utils/getStore';
 
 export default function AdminNavbar({
   setDarkMode,
@@ -50,17 +52,17 @@ export default function AdminNavbar({
     {
       id: 1,
       label: 'Categories',
-      path: `/admin/categories`,
+      path: `/admin/${storeId}/categories`,
     },
     {
       id: 2,
       label: 'Colors',
-      path: `/admin/colors`,
+      path: `/admin/${storeId}/colors`,
     },
     {
       id: 3,
       label: 'Products',
-      path: `/admin/products`,
+      path: `/admin/${storeId}/products`,
     },
   ];
 
@@ -78,7 +80,7 @@ export default function AdminNavbar({
           className="sm:hidden"
         />
         <NavbarBrand>
-          <Link to="/admin" className="font-bold text-inherit">
+          <Link to={`/admin/${storeId}`} className="font-bold text-inherit">
             Admin-Panel
           </Link>
         </NavbarBrand>
@@ -141,7 +143,11 @@ export default function AdminNavbar({
                 )}
               </DropdownItem>
 
-              <DropdownItem key="settings">Profile</DropdownItem>
+              <DropdownItem key="profile">
+                <Link className="block" to="/profile">
+                  Profile
+                </Link>
+              </DropdownItem>
 
               <DropdownItem
                 onClick={() => {
