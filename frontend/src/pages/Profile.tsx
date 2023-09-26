@@ -6,23 +6,22 @@ import UpdateModal from '../components/shared/UpdateModal';
 function Profile() {
   const { user } = useAppSelector((state) => state.authReducer);
   return (
-    <div className="max-w-lg mx-auto mt-10">
+    <div className="max-w-md mx-auto mt-10">
       <div className="p-4 flex items-start justify-center rounded-lg shadow-md">
         <div className="overflow-visible py-2">
           <Image
             alt="Card background"
-            className="object-cover rounded-xl"
+            className="object-cover w-40 h-40 rounded-xl"
             src={user?.image}
-            width={370}
           />
         </div>
         <div className="pb-0 pt-2 px-4 flex-col items-start">
-          <h1 className=" font-semibold text-large">Name: {user?.name}</h1>
-          <h2 className="font-semibold text-large">Email:{user?.email}</h2>
-          <h4 className="font-semibold text-large">
+          <h1 className=" font-semibold ">Name: {user?.name}</h1>
+          <h2 className="font-semibold ">Email: {user?.email}</h2>
+          <h4 className="font-semibold ">
             Since: {user?.createdAt.slice(0, 10)}
           </h4>
-          <div className="flex items-center gap-2 justify-center">
+          <div className="flex mt-2 gap-3 items-center justify-center">
             <DeleteModal />
             <UpdateModal />
           </div>

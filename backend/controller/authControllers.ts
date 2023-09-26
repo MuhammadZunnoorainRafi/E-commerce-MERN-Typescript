@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import { genToken } from '../utils/genToken';
 
 const userSchema = z.object({
+  id: z.string().optional(),
   image: z.string(),
   name: z.string(),
   email: z.string().email('Enter a valid email'),
@@ -100,4 +101,44 @@ export const logController = asyncHandler(
   }
 );
 
-export const updateController = asyncHandler(async (req, res) => {});
+export const updateController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id, name, email, password, image } = req.body;
+    const validation = userSchema.safeParse(req.body);
+    if (!validation.success) {
+      res.status(401).json(fromZodError(validation.error));
+      return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const createUser = await prismaDB.user.update({
+      where: { id: id },
+      data: {
+        image,
+        name,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    const resUser = {
+      _id: createUser.id,
+      image: createUser.image,
+      name: createUser.name,
+      email: createUser.email,
+      token: genToken(createUser.id),
+      isAdmin: createUser.isAdmin,
+      createdAt: createUser.createdAt,
+      updatedAt: createUser.updatedAt,
+    };
+
+    if (resUser) {
+      res.status(201).json(resUser);
+    } else {
+      res.status(401);
+      throw new Error('User not found');
+    }
+  }
+);

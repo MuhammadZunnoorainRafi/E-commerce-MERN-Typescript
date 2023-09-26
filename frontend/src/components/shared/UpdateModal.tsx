@@ -3,13 +3,12 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   useDisclosure,
   Input,
 } from '@nextui-org/react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +16,8 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { type IError, errorHandler } from '../../utils/errorHandler';
+import { useUpdQueryHook } from '../../hooks/userReactQueryHooks';
+import { updateUser } from '../../Slices/authSlice';
 
 type formType = {
   image: string;
@@ -49,7 +50,7 @@ export default function UpdateModal() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { mutateAsync } = useRegQueryHook();
+  const { mutateAsync } = useUpdQueryHook();
 
   const {
     handleSubmit,
@@ -77,6 +78,7 @@ export default function UpdateModal() {
       );
 
       const dataWithImage = {
+        id: user?._id,
         name,
         email,
         password,
@@ -84,7 +86,7 @@ export default function UpdateModal() {
       };
 
       const response = await mutateAsync(dataWithImage);
-      dispatch(registerUser(response));
+      dispatch(updateUser(response));
       toast.success(`Updated ${response.name}`);
       navigate('/');
     } catch (error) {
@@ -96,7 +98,7 @@ export default function UpdateModal() {
 
   return (
     <>
-      <Button color="success" onPress={onOpen}>
+      <Button color="secondary" onPress={onOpen}>
         Update
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -107,7 +109,7 @@ export default function UpdateModal() {
                 Update User
               </ModalHeader>
               <ModalBody>
-                <div className="space-y-5">
+                <div className="space-y-3">
                   <form
                     className="flex max-w-xl mx-auto flex-col space-y-3"
                     onSubmit={handleSubmit(formSubmit)}
@@ -116,7 +118,6 @@ export default function UpdateModal() {
                       <Input
                         color={errors.image?.message ? 'danger' : 'default'}
                         size="md"
-                        label="Image"
                         placeholder="Enter your Image"
                         {...register('image')}
                         type="file"
@@ -132,7 +133,7 @@ export default function UpdateModal() {
                         color={errors.name?.message ? 'danger' : 'default'}
                         {...register('name')}
                         type="text"
-                        label="Name"
+                        // label="Name"
                       />
                       <p className="text-red-500 text-sm">
                         {errors.name?.message}
@@ -143,7 +144,7 @@ export default function UpdateModal() {
                         color={errors.email?.message ? 'danger' : 'default'}
                         {...register('email')}
                         type="text"
-                        label="Email"
+                        // label="Email"
                       />
                       <p className="text-red-500 text-sm">
                         {errors.email?.message}
@@ -154,7 +155,8 @@ export default function UpdateModal() {
                         color={errors.password?.message ? 'danger' : 'default'}
                         {...register('password')}
                         type="password"
-                        label="Password"
+                        placeholder="Password"
+                        // label="Password"
                       />
                       <p className="text-red-500 text-sm">
                         {errors.password?.message}
@@ -165,42 +167,33 @@ export default function UpdateModal() {
                         color={errors.password2?.message ? 'danger' : 'default'}
                         {...register('password2')}
                         type="password"
-                        label="Confirm Password"
+                        placeholder="Confirm Password"
+
+                        // label="Confirm Password"
                       />
                       <p className="text-red-500 text-sm">
                         {errors.password2?.message}
                       </p>
                     </div>
                     <Button
-                      className="w-52 mx-auto"
-                      size="lg"
                       type="submit"
                       color="primary"
                       disabled={isLoading}
                       isLoading={isLoading}
                     >
-                      Register
+                      Update
                     </Button>
                   </form>
-                  <p className="text-center">
-                    Already have an account?{' '}
-                    <Link
-                      className="text-blue-500 hover:text-blue-800"
-                      to="/login"
-                    >
-                      Sign In
-                    </Link>
-                  </p>
                 </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  className="w-full"
+                  variant="light"
+                  onPress={onClose}
+                >
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
+              </ModalBody>
             </>
           )}
         </ModalContent>
