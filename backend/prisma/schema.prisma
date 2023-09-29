@@ -17,6 +17,8 @@ model Store {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Color     Color[]
+  Size      Size[]
 }
 
 model User {
@@ -28,4 +30,24 @@ model User {
   isAdmin   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Color {
+  id        String   @id @default(uuid())
+  name      String
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([storeId])
+}
+
+model Size {
+  id        String   @id @default(uuid())
+  name      String
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([storeId])
 }

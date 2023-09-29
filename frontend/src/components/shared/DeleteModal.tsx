@@ -7,9 +7,30 @@ import {
   Button,
   useDisclosure,
 } from '@nextui-org/react';
+import { useDelUserQueryHook } from '../../hooks/userReactQueryHooks';
+import { toast } from 'sonner';
+import { type IError, errorHandler } from '../../utils/errorHandler';
+import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
+import { useNavigate } from 'react-router-dom';
+import { deleteUser } from '../../Slices/authSlice';
 
 export default function DeleteModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isLoading, mutateAsync } = useDelUserQueryHook();
+  const navigate = useNavigate();
+  const { user } = useAppSelector((state) => state.authReducer);
+  const dispatch = useAppDispatch();
+  const handleDelete = async () => {
+    try {
+      const res = await mutateAsync(user?._id as string);
+      dispatch(deleteUser());
+      toast.success(res.message);
+
+      navigate('/');
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    }
+  };
 
   return (
     <>
@@ -25,30 +46,21 @@ export default function DeleteModal() {
               </ModalHeader>
               <ModalBody>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
+                  Are you sure you want to delete your account? You will lose
+                  all of your data. This action is permanent and irreversible.
                 </p>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button
+                  color="danger"
+                  isLoading={isLoading}
+                  isDisabled={isLoading}
+                  onClick={handleDelete}
+                >
+                  Delete
                 </Button>
               </ModalFooter>
             </>

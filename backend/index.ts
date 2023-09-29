@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import authRouter from './routes/authRoutes';
 import { errorMiddleware } from './middlewares/errorMilddleware';
 import cors from 'cors';
-import storeRoutes from './routes/adminRoutes';
+import adminRoutes from './routes/adminRoutes';
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -19,7 +19,7 @@ app.use(
 );
 
 app.use('/api/auth', authRouter);
-app.use('/api/admin', storeRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(errorMiddleware);
 app.listen(PORT, () =>

@@ -7,7 +7,9 @@ function Admin() {
 
   return (
     <div
-      className={`${darkMode ? 'dark' : 'light'} text-foreground bg-background`}
+      className={`${
+        darkMode ? 'dark' : 'light'
+      } min-h-[70vh] text-foreground bg-background`}
     >
       <Toaster
         richColors
@@ -19,12 +21,8 @@ function Admin() {
           },
         }}
       />
-      <div>
-        <div>
-          <main className="mt-2 max-w-5xl mx-auto px-2 md:px-0">
-            <Outlet />
-          </main>
-        </div>
+      <div className=" mt-2 mb-auto ">
+        <Outlet />
       </div>
     </div>
   );

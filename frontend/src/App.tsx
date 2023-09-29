@@ -32,7 +32,7 @@ function App() {
           <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         )}
         <div>
-          <main className="mt-2 max-w-5xl mx-auto px-2 md:px-0">
+          <main className="mt-2 mb-auto max-w-5xl mx-auto px-2 md:px-0">
             <Outlet />
           </main>
         </div>

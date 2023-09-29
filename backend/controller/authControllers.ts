@@ -142,3 +142,26 @@ export const updateController = asyncHandler(
     }
   }
 );
+
+export const delUserController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.body;
+    if (!id) {
+      res.status(400).json({
+        error: 'ID not found',
+      });
+    }
+
+    const response = await prismaDB.user.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    if (response) {
+      res.status(200).json({ message: 'User Deleted' });
+    } else {
+      res.status(400).json({ error: 'Something went wrong' });
+    }
+  }
+);

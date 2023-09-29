@@ -39,3 +39,17 @@ export const useUpdQueryHook = () => {
     },
   });
 };
+
+export const useDelUserQueryHook = () => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const config = {
+        data: {
+          id,
+        },
+      };
+      const res = await axios.delete('/api/auth/del', config);
+      return res.data;
+    },
+  });
+};

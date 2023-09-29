@@ -1,4 +1,4 @@
-import { Image, Button } from '@nextui-org/react';
+import { Image } from '@nextui-org/react';
 import { useAppSelector } from '../hooks/RTKHooks';
 import DeleteModal from '../components/shared/DeleteModal';
 import UpdateModal from '../components/shared/UpdateModal';
