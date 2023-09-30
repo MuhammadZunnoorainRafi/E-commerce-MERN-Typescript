@@ -1,14 +1,6 @@
-import {
-  Button,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  getKeyValue,
-} from '@nextui-org/react';
+import { Divider } from '@nextui-org/react';
+import { MdDeleteOutline } from 'react-icons/md';
+import CreateColorButtonModal from '../../components/shared/CreateColorModal';
 
 const rows = [
   {
@@ -37,21 +29,6 @@ const rows = [
   },
 ];
 
-const columns = [
-  {
-    key: 'name',
-    label: 'NAME',
-  },
-  {
-    key: 'role',
-    label: 'ROLE',
-  },
-  {
-    key: 'status',
-    label: 'STATUS',
-  },
-];
-
 function Colors() {
   return (
     <div>
@@ -60,28 +37,36 @@ function Colors() {
           <h1 className="font-bold text-xl">Colors</h1>
           <p className="text-slate-600 text-sm">Manage colors for your store</p>
         </div>
-        <Button color="primary">+ Add New</Button>
+        <CreateColorButtonModal />
       </div>
       <Divider className="my-5" />
 
       {/* Table */}
-      <div>
-        <Table aria-label="Example table with dynamic content">
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody emptyContent={'No rows to display.'} items={rows}>
-            {(item) => (
-              <TableRow key={item.key}>
-                {(columnKey) => (
-                  <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className=" p-4 shadow-lg rounded-lg border border-slate-200">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left bg-slate-100 text-slate-700 ">
+              <th className="p-2 rounded-l-lg">Name</th>
+              <th className="p-2">Date</th>
+              <th className="p-2 rounded-r-lg">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((val) => {
+              return (
+                <tr key={val.key}>
+                  <td className="p-1">{val.name}</td>
+                  <td className="p-1">{val.role}</td>
+                  <td className=" pl-6 pt-1">
+                    <button className="hover:text-red-500">
+                      <MdDeleteOutline />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

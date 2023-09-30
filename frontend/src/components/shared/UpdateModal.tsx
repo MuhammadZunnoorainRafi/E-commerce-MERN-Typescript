@@ -98,7 +98,7 @@ export default function UpdateModal() {
 
   return (
     <>
-      <Button color="secondary" onPress={onOpen}>
+      <Button color="primary" onPress={onOpen}>
         Update
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
