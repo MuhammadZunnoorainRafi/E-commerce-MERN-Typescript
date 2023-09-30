@@ -17,9 +17,10 @@ model Store {
   userId    String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Color     Color[]
-  Size      Size[]
-  Category  Category[]
+  color     Color[]
+  size      Size[]
+  category  Category[]
+  product   Product[]
 }
 
 model User {
@@ -34,31 +35,57 @@ model User {
 }
 
 model Color {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
+  store     Store     @relation(fields: [storeId], references: [id])
+  createdAt DateTime  @default(now())
+  Product   Product[]
 
   @@index([storeId])
 }
 
 model Size {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
+  store     Store     @relation(fields: [storeId], references: [id])
+  createdAt DateTime  @default(now())
+  product   Product[]
 
   @@index([storeId])
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
+  store     Store     @relation(fields: [storeId], references: [id])
+  createdAt DateTime  @default(now())
+  product   Product[]
 
   @@index([storeId])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Decimal
+  slug        String
+  stock       Int
+  rating      Decimal
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  sizeId      String
+  size        Size     @relation(fields: [sizeId], references: [id])
+  colorId     String
+  color       Color    @relation(fields: [colorId], references: [id])
+
+  @@index([storeId])
+  @@index([sizeId])
+  @@index([colorId])
+  @@index([categoryId])
 }

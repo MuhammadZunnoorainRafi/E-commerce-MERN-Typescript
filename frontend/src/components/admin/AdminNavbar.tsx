@@ -94,9 +94,7 @@ export default function AdminNavbar({
         {navbarItems.map((val) => {
           return (
             <NavbarItem isActive={location.pathname === val.path} key={val.id}>
-              <Link className="hover:text-black text-slate-700" to={val.path}>
-                {val.label}
-              </Link>
+              <Link to={val.path}>{val.label}</Link>
             </NavbarItem>
           );
         })}

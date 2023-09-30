@@ -16,7 +16,7 @@ import {
   DropdownMenu,
 } from '@nextui-org/react';
 import { BiSolidSun, BiSolidMoon } from 'react-icons/bi';
-import { Link, redirect, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { logoutUser } from '../../Slices/authSlice';
 import { storeId } from '../../utils/getStore';
