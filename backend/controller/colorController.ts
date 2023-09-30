@@ -29,3 +29,39 @@ export const createColorController = asyncHandler(
     }
   }
 );
+
+export const getColorController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const getColor = await prismaDB.color.findMany();
+    if (getColor) {
+      res.status(200).json(getColor);
+    } else {
+      res.status(400).json({
+        error: 'Error found in colors',
+      });
+    }
+  }
+);
+
+export const deleteColorController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.body;
+    if (!id) {
+      res.status(400).json({
+        error: 'Id not found',
+      });
+    }
+    const deleteColor = await prismaDB.color.delete({
+      where: {
+        id: id,
+      },
+    });
+    if (deleteColor) {
+      res.status(200).json({ message: 'color deleted' });
+    } else {
+      res.status(400).json({
+        error: 'Something went wrong in color',
+      });
+    }
+  }
+);

@@ -19,7 +19,6 @@ import { BiSolidSun, BiSolidMoon } from 'react-icons/bi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { logoutUser } from '../../Slices/authSlice';
-import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 
 export default function AdminNavbar({
@@ -63,6 +62,11 @@ export default function AdminNavbar({
       id: 3,
       label: 'Products',
       path: `/admin/${storeId}/products`,
+    },
+    {
+      id: 4,
+      label: 'Sizes',
+      path: `/admin/${storeId}/sizes`,
     },
   ];
 

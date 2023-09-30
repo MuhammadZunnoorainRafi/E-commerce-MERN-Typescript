@@ -1,10 +1,10 @@
 import { Divider, Spinner } from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
-import CreateColorButtonModal from '../../components/shared/CreateColorModal';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
+import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
 
 interface IRows {
   id: string;
@@ -12,26 +12,26 @@ interface IRows {
   createdAt: string;
 }
 
-function Colors() {
+function Size() {
   const queryClient = useQueryClient();
 
   const { isLoading, data } = useQuery({
-    queryKey: ['colors'],
+    queryKey: ['size'],
     queryFn: async () => {
-      const res = await axios.get(`/api/admin/${storeId}/color`);
+      const res = await axios.get(`/api/admin/${storeId}/size`);
       return res.data;
     },
   });
 
-  const { mutate, isLoading: delCLoading } = useMutation({
+  const { mutate, isLoading: delSLoading } = useMutation({
     mutationFn: async (id: string) => {
       const config = {
         data: {
           id,
         },
       };
-      await axios.delete(`/api/admin/${storeId}/color`, config);
-      queryClient.invalidateQueries({ queryKey: ['colors'] });
+      await axios.delete(`/api/admin/${storeId}/size`, config);
+      queryClient.invalidateQueries({ queryKey: ['size'] });
     },
   });
   const handleDelete = async (id: string) => {
@@ -42,17 +42,17 @@ function Colors() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-xl">Colors</h1>
-          <p className="text-slate-600 text-sm">Manage colors for your store</p>
+          <h1 className="font-bold text-xl">Sizes</h1>
+          <p className="text-slate-600 text-sm">Manage sizes for your store</p>
         </div>
-        <CreateColorButtonModal />
+        <CreateSizeButtonModal />
       </div>
       <Divider className="my-5" />
 
       {/* Table */}
       <div className=" p-4 shadow-lg rounded-lg border border-slate-200">
         <table
-          className={`w-full ${delCLoading ? 'cursor-wait' : 'cursor-default'}`}
+          className={`w-full ${delSLoading ? 'cursor-wait' : 'cursor-default'}`}
         >
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
@@ -80,7 +80,7 @@ function Colors() {
                       <button
                         onClick={() => handleDelete(val.id)}
                         className={`hover:text-red-500 ${
-                          delCLoading ? 'cursor-wait' : 'cursor-default'
+                          delSLoading ? 'cursor-wait' : 'cursor-default'
                         }`}
                       >
                         <MdDeleteOutline />
@@ -97,4 +97,4 @@ function Colors() {
   );
 }
 
-export default Colors;
+export default Size;

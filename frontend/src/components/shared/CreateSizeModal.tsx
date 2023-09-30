@@ -14,18 +14,15 @@ import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function CreateColorButtonModal() {
+export default function CreateSizeButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
 
-  const colorSchema = z.object({
-    name: z
-      .string()
-      .nonempty('Enter Name')
-      .min(3, 'Color must be above 2 characters '),
+  const sizeSchema = z.object({
+    name: z.string().nonempty('Enter Size Name'),
   });
 
-  type TData = z.infer<typeof colorSchema>;
+  type TData = z.infer<typeof sizeSchema>;
 
   const {
     register,
@@ -36,23 +33,25 @@ export default function CreateColorButtonModal() {
     defaultValues: {
       name: '',
     },
-    resolver: zodResolver(colorSchema),
+    resolver: zodResolver(sizeSchema),
   });
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (data: TData) => {
-      const res = await axios.post(`/api/admin/${storeId}/color`, data);
+      const res = await axios.post(`/api/admin/${storeId}/size`, data);
       return res.data;
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['colors'] });
+      queryClient.invalidateQueries({ queryKey: ['size'] });
       reset();
       onClose();
     },
   });
 
   const formSubmit = async (data: TData) => {
-    mutate(data);
+    mutate({
+      name: data.name.toUpperCase(),
+    });
   };
 
   return (
@@ -65,7 +64,7 @@ export default function CreateColorButtonModal() {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create Color
+                Create Size
               </ModalHeader>
               <ModalBody className="pb-3">
                 <form onSubmit={handleSubmit(formSubmit)}>
