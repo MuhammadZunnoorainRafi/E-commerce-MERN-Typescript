@@ -5,6 +5,8 @@ import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
+import { getSize } from '../../Slices/sizeSlice';
+import { useAppDispatch } from '../../hooks/RTKHooks';
 
 interface IRows {
   id: string;
@@ -13,12 +15,13 @@ interface IRows {
 }
 
 function Size() {
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-
   const { isLoading, data } = useQuery({
     queryKey: ['size'],
     queryFn: async () => {
       const res = await axios.get(`/api/admin/${storeId}/size`);
+      dispatch(getSize(res.data));
       return res.data;
     },
   });

@@ -5,6 +5,8 @@ import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
+import { useAppDispatch } from '../../hooks/RTKHooks';
+import { getColor } from '../../Slices/colorSlice';
 
 interface IRows {
   id: string;
@@ -14,11 +16,13 @@ interface IRows {
 
 function Colors() {
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
 
   const { isLoading, data } = useQuery({
     queryKey: ['colors'],
     queryFn: async () => {
       const res = await axios.get(`/api/admin/${storeId}/color`);
+      dispatch(getColor(res.data));
       return res.data;
     },
   });

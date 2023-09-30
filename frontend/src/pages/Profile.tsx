@@ -8,7 +8,7 @@ function Profile() {
   const { user } = useAppSelector((state) => state.authReducer);
   return (
     <div className="max-w-md mx-auto mt-10">
-      <div className="p-4 flex items-start justify-center rounded-lg shadow-md">
+      <div className="p-4 flex items-start justify-center border border-default-200 rounded-xl shadow-lg">
         <div className="overflow-visible py-2">
           <Image
             alt="Card background"
