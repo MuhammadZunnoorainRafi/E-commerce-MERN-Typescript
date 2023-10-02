@@ -83,9 +83,19 @@ model Product {
   size        Size     @relation(fields: [sizeId], references: [id])
   colorId     String
   color       Color    @relation(fields: [colorId], references: [id])
+  image       Image[]
 
   @@index([storeId])
   @@index([sizeId])
   @@index([colorId])
   @@index([categoryId])
+}
+
+model Image {
+  id        String  @id @default(uuid())
+  url       String
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
 }
