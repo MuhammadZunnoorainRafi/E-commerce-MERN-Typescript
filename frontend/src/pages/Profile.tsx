@@ -1,8 +1,8 @@
 import { Image } from '@nextui-org/react';
 import { useAppSelector } from '../hooks/RTKHooks';
-import DeleteModal from '../components/shared/DeleteModal';
-import UpdateModal from '../components/shared/UpdateModal';
 import moment from 'moment';
+import DeleteModal from '../components/modals/DeleteModal';
+import UpdateModal from '../components/modals/UpdateModal';
 
 function Profile() {
   const { user } = useAppSelector((state) => state.authReducer);

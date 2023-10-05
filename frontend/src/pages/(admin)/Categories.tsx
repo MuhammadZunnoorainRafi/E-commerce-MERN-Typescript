@@ -7,7 +7,7 @@ import moment from 'moment';
 
 import { useAppDispatch } from '../../hooks/RTKHooks';
 import { getCategory } from '../../Slices/categorySlice';
-import CreateCategoryButtonModal from '../../components/shared/CreateCategoryModal';
+import CreateCategoryButtonModal from '../../components/modals/CreateCategoryModal';
 
 interface IRows {
   id: string;

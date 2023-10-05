@@ -1,26 +1,28 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-interface ISize {
+type TSize = {
   id: string;
   name: string;
   createdAt: string;
-}
-[];
+}[];
 
-interface IInitialState {
-  size: ISize | [];
+interface TInitialState {
+  size: TSize | [];
 }
 
-const initialState: IInitialState = {
-  size: [],
+const initialState: TInitialState = {
+  size: localStorage.getItem('sizes')
+    ? JSON.parse(localStorage.getItem('sizes')!)
+    : [],
 };
 
 const sizeSlice = createSlice({
   name: 'sizeSlice',
   initialState,
   reducers: {
-    getSize: (state, action: PayloadAction<ISize>) => {
+    getSize: (state, action: PayloadAction<TSize>) => {
       state.size = action.payload;
+      localStorage.setItem('sizes', JSON.stringify(action.payload));
     },
   },
 });

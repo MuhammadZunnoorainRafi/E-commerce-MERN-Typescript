@@ -72,7 +72,7 @@ model Product {
   name        String
   description String
   price       Decimal
-  slug        String
+  slug        String   @unique
   stock       Int
   rating      Decimal
   storeId     String
@@ -95,7 +95,7 @@ model Image {
   id        String  @id @default(uuid())
   url       String
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
 }

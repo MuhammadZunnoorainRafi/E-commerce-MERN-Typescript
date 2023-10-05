@@ -1,26 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface IColor {
+type TColor = {
   id: string;
   name: string;
   createdAt: string;
-}
-[];
+}[];
 
-interface IInitialState {
-  color: IColor | [];
+interface TInitialState {
+  color: TColor | [];
 }
 
-const initialState: IInitialState = {
-  color: [],
+const initialState: TInitialState = {
+  color: localStorage.getItem('colors')
+    ? JSON.parse(localStorage.getItem('colors')!)
+    : [],
 };
 
 const colorStoreSlice = createSlice({
   name: 'Color-store-slice',
   initialState,
   reducers: {
-    getColor: (state, action: PayloadAction<IColor>) => {
+    getColor: (state, action: PayloadAction<TColor>) => {
       state.color = action.payload;
+      localStorage.setItem('colors', JSON.stringify(action.payload));
     },
   },
 });

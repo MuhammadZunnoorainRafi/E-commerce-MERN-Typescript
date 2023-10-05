@@ -1,12 +1,12 @@
 import { Divider, Spinner } from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
-import CreateColorButtonModal from '../../components/shared/CreateColorModal';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import { useAppDispatch } from '../../hooks/RTKHooks';
 import { getColor } from '../../Slices/colorSlice';
+import CreateColorButtonModal from '../../components/modals/CreateColorModal';
 
 interface IRows {
   id: string;

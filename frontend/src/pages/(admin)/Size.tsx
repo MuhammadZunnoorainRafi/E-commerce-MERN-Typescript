@@ -4,9 +4,9 @@ import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
 import { getSize } from '../../Slices/sizeSlice';
 import { useAppDispatch } from '../../hooks/RTKHooks';
+import CreateSizeButtonModal from '../../components/modals/CreateSizeModal';
 
 interface IRows {
   id: string;
