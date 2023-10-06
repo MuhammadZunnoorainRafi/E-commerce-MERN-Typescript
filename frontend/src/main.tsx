@@ -24,6 +24,7 @@ import Colors from './pages/(admin)/Colors.tsx';
 import Products from './pages/(admin)/Products.tsx';
 import Profile from './pages/Profile.tsx';
 import Size from './pages/(admin)/Size.tsx';
+import CreateProduct from './pages/(admin)/CreateProduct.tsx';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:4000/' : '';
@@ -50,6 +51,7 @@ const router = createBrowserRouter(
         <Route path="sizes" element={<Size />} />
         <Route path="colors" element={<Colors />} />
         <Route path="products" element={<Products />} />
+        <Route path="products/create" element={<CreateProduct />} />
       </Route>
     </Route>
   )

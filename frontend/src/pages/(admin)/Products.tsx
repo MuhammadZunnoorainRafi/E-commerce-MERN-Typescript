@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
 import CreateProductButtonModal from '../../components/modals/createProductModal';
+import { Link } from 'react-router-dom';
 
 interface IRows {
   id: string;
@@ -48,7 +49,7 @@ function Products() {
             Manage products for your store
           </p>
         </div>
-        <CreateProductButtonModal />
+        <Link to={`/admin/${storeId}/products/create`}>+Add New</Link>
       </div>
       <Divider className="my-5" />
 

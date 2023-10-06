@@ -4,9 +4,9 @@ import prismaDB from '../config/prismaDB';
 
 export const createProductController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, image } = req.body;
+    const { name, image, categoryId } = req.body;
 
-    if (!image || !name) {
+    if (!image || !name || !categoryId) {
       res.status(400).json({ error: 'fill all fields' });
     }
 

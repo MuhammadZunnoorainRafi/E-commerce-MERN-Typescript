@@ -18,7 +18,6 @@ model Store {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   color     Color[]
-  size      Size[]
   category  Category[]
   product   Product[]
 }
@@ -47,55 +46,59 @@ model Color {
 
 model Size {
   id        String   @id @default(uuid())
-  name      String
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
+  label     String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
   createdAt DateTime @default(now())
-  // product   Product[]
 
-  @@index([storeId])
+  @@index([productId])
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name      String
+  id        String    @id @default(uuid())
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
-  // product   Product[]
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  createdAt DateTime  @default(now())
+  product   Product[]
 
   @@index([storeId])
 }
 
 model Product {
-  id      String   @id @default(uuid())
-  name    String
+  id         String    @id @default(uuid())
+  name       String
+  size       Size[]
   // description String
   // price       Decimal
   // slug        String   @unique
   // stock       Int
   // rating      Decimal
-  storeId String
-  store   Store    @relation(fields: [storeId], references: [id])
+  storeId    String
+  store      Store     @relation(fields: [storeId], references: [id])
   // categoryId  String
   // category    Category @relation(fields: [categoryId], references: [id])
   // sizeId      String
   // size        Size     @relation(fields: [sizeId], references: [id])
   // colorId     String
   // color       Color    @relation(fields: [colorId], references: [id])
-  images  Images[]
+  images     Images[]
   // @@index([sizeId])
   // @@index([colorId])
   // @@index([categoryId])
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 
   @@index([storeId])
+  @@index([categoryId])
 }
 
 model Images {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   url       String
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@index([productId])
 }
