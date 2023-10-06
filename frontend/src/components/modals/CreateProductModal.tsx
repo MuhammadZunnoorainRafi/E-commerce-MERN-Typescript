@@ -17,6 +17,8 @@ import { storeId } from '../../utils/getStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { fromZodError } from 'zod-validation-error';
+import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
+import { useState } from 'react';
 
 export default function CreateProductButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -44,7 +46,12 @@ export default function CreateProductButtonModal() {
     // colorId: z.string().nonempty('Select Color'),
   });
 
-  type TData = z.infer<typeof productSchema>;
+  type TData = {
+    name: string;
+    image: {
+      url: string;
+    }[];
+  };
 
   const {
     register,
@@ -58,20 +65,28 @@ export default function CreateProductButtonModal() {
     resolver: zodResolver(productSchema),
   });
 
-  // const { mutate, isLoading } = useMutation({
-  //   mutationFn: async (data: TData) => {
-  //     const res = await axios.post(`/api/admin/${storeId}/product`, data);
-  //     return res.data;
-  //   },
-  //   onSuccess() {
-  //     queryClient.invalidateQueries({ queryKey: ['product'] });
-  //     reset();
-  //     onClose();
-  //   },
-  // });
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async (data: TData) => {
+      const res = await axios.post(`/api/admin/${storeId}/product`, data);
+      return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['product'] });
+      reset();
+      onClose();
+    },
+  });
+  const formSubmit = async ({ name, image }: TData) => {
+    const arr = [];
+    for (let i = 0; i < image.length; i++) {
+      const multipleImages = await uploadImageCloudinary(image[i]);
+      arr.push(multipleImages);
+    }
 
-  const formSubmit = (data: TData) => {
-    console.log([...data.image]);
+    mutate({
+      name,
+      image: arr,
+    });
     // mutate(data);
   };
 
@@ -167,15 +182,14 @@ export default function CreateProductButtonModal() {
                       {errors.colorId?.message}
                     </p>
                   </div> */}
-                  <button type="submit">Create</button>
-                  {/* <Button
+                  <Button
                     type="submit"
                     color="primary"
-                    // isLoading={isLoading}
-                    // isDisabled={isLoading}
+                    isLoading={isLoading}
+                    isDisabled={isLoading}
                   >
                     Create
-                  </Button> */}
+                  </Button>
                 </form>
               </ModalBody>
             </>
