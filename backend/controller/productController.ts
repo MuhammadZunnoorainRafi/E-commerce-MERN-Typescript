@@ -4,9 +4,18 @@ import prismaDB from '../config/prismaDB';
 
 export const createProductController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, image, categoryId } = req.body;
+    const { name, image, categoryId, sizes, price, colorId, description } =
+      req.body;
 
-    if (!image || !name || !categoryId) {
+    if (
+      !image ||
+      !name ||
+      !categoryId ||
+      !sizes ||
+      !price ||
+      !colorId ||
+      !description
+    ) {
       res.status(400).json({ error: 'fill all fields' });
     }
 
@@ -19,6 +28,15 @@ export const createProductController = asyncHandler(
             data: [...image.map((val: { url: string }) => val)],
           },
         },
+        size: {
+          createMany: {
+            data: [...sizes.map((val: { label: string }) => val)],
+          },
+        },
+        categoryId,
+        price,
+        description,
+        colorId,
       },
     });
     if (newProduct) {

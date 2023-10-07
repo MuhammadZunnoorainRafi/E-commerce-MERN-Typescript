@@ -34,24 +34,37 @@ model User {
 }
 
 model Color {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
-  // Product   Product[]
+  store     Store     @relation(fields: [storeId], references: [id])
+  createdAt DateTime  @default(now())
+  Product   Product[]
 
   @@index([storeId])
 }
 
-model Size {
-  id        String   @id @default(uuid())
-  label     String
-  product   Product  @relation(fields: [productId], references: [id])
-  productId String
-  createdAt DateTime @default(now())
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  size        SizeT[]
+  description String
+  price       Decimal
+  // stock       Int
+  rating      String   @default("0")
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  colorId     String
+  color       Color    @relation(fields: [colorId], references: [id])
+  images      Images[]
 
-  @@index([productId])
+  // @@index([sizeId])
+  // @@index([categoryId])
+  @@index([colorId])
+  @@index([storeId])
+  @@index([categoryId])
 }
 
 model Category {
@@ -65,32 +78,14 @@ model Category {
   @@index([storeId])
 }
 
-model Product {
-  id         String    @id @default(uuid())
-  name       String
-  size       Size[]
-  // description String
-  // price       Decimal
-  // slug        String   @unique
-  // stock       Int
-  // rating      Decimal
-  storeId    String
-  store      Store     @relation(fields: [storeId], references: [id])
-  // categoryId  String
-  // category    Category @relation(fields: [categoryId], references: [id])
-  // sizeId      String
-  // size        Size     @relation(fields: [sizeId], references: [id])
-  // colorId     String
-  // color       Color    @relation(fields: [colorId], references: [id])
-  images     Images[]
-  // @@index([sizeId])
-  // @@index([colorId])
-  // @@index([categoryId])
-  Category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?
+model SizeT {
+  id        String   @id @default(uuid())
+  label     String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
-  @@index([storeId])
-  @@index([categoryId])
+  @@index([productId])
 }
 
 model Images {
