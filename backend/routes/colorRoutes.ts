@@ -4,10 +4,11 @@ import {
   deleteColorController,
   getColorController,
 } from '../controller/colorController';
+import { protect } from '../middlewares/authMiddleware';
 const colorRoutes = express.Router({ mergeParams: true });
 
-colorRoutes.post('/:id/color', createColorController);
 colorRoutes.get('/:id/color', getColorController);
-colorRoutes.delete('/:id/color', deleteColorController);
+colorRoutes.post('/:id/color', protect, createColorController);
+colorRoutes.delete('/:id/color', protect, deleteColorController);
 
 export default colorRoutes;

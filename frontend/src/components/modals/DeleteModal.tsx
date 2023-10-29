@@ -16,13 +16,15 @@ import { deleteUser } from '../../Slices/authSlice';
 
 export default function DeleteModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { isLoading, mutateAsync } = useDelUserQueryHook();
-  const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.authReducer);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const { isLoading, mutateAsync } = useDelUserQueryHook(user!.token);
+
   const handleDelete = async () => {
     try {
-      const res = await mutateAsync(user?._id as string);
+      const res = await mutateAsync(user!._id as string);
       dispatch(deleteUser());
       toast.success(res.message);
 

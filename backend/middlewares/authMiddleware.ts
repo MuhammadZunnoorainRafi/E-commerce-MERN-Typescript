@@ -9,7 +9,7 @@ interface IUserType {
   email: string;
   password: string;
   image: string;
-  isAdmin: boolean;
+  isAdmin: false;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +25,7 @@ interface IAdminType {
   updatedAt: Date;
 }
 
-export interface IReqWithUser extends Request {
+export interface IRequest extends Request {
   user?: IUserType;
   admin?: IAdminType;
 }
@@ -35,7 +35,7 @@ interface IDecodedToken {
 }
 
 export const protect = asyncHandler(
-  async (req: IReqWithUser, res: Response, next: NextFunction) => {
+  async (req: IRequest, res: Response, next: NextFunction) => {
     let token;
     const { authorization } = req.headers;
     if (authorization && authorization.startsWith('Bearer')) {
@@ -47,7 +47,7 @@ export const protect = asyncHandler(
           process.env.JWT_SECRET!
         ) as IDecodedToken;
         req.user = (await prismaDB.user.findUnique({
-          where: { id: decodedToken.id },
+          where: { id: decodedToken.id, isAdmin: false },
           select: {
             id: true,
             name: true,

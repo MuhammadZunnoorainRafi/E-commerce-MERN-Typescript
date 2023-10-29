@@ -5,6 +5,7 @@ import prismaDB from '../config/prismaDB';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import { genToken } from '../utils/genToken';
+import { IRequest } from '../middlewares/authMiddleware';
 
 const userSchema = z.object({
   id: z.string().optional(),
@@ -49,19 +50,18 @@ export const regController = asyncHandler(
         password: hashedPassword,
       },
     });
+    if (createUser) {
+      const resUser = {
+        _id: createUser.id,
+        image: createUser.image,
+        name: createUser.name,
+        email: createUser.email,
+        token: genToken(createUser.id),
+        isAdmin: createUser.isAdmin,
+        createdAt: createUser.createdAt,
+        updatedAt: createUser.updatedAt,
+      };
 
-    const resUser = {
-      _id: createUser.id,
-      image: createUser.image,
-      name: createUser.name,
-      email: createUser.email,
-      token: genToken(createUser.id),
-      isAdmin: createUser.isAdmin,
-      createdAt: createUser.createdAt,
-      updatedAt: createUser.updatedAt,
-    };
-
-    if (resUser) {
       res.status(201).json(resUser);
     } else {
       res.status(401);
@@ -102,7 +102,7 @@ export const logController = asyncHandler(
 );
 
 export const updateController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
     const { id, name, email, password, image } = req.body;
     const validation = userSchema.safeParse(req.body);
     if (!validation.success) {
@@ -144,7 +144,7 @@ export const updateController = asyncHandler(
 );
 
 export const delUserController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
     const { id } = req.body;
     if (!id) {
       res.status(400).json({

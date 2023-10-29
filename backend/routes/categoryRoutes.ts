@@ -4,10 +4,11 @@ import {
   deleteCategoryController,
   getCategoryController,
 } from '../controller/categoryController';
+import { protect } from '../middlewares/authMiddleware';
 const categoryRoutes = express.Router({ mergeParams: true });
 
-categoryRoutes.post('/:id/category', createCategoryController);
 categoryRoutes.get('/:id/category', getCategoryController);
-categoryRoutes.delete('/:id/category', deleteCategoryController);
+categoryRoutes.post('/:id/category', protect, createCategoryController);
+categoryRoutes.delete('/:id/category', protect, deleteCategoryController);
 
 export default categoryRoutes;

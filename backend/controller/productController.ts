@@ -8,13 +8,13 @@ export const createProductController = asyncHandler(
       req.body;
 
     if (
-      !image ||
       !name ||
-      !categoryId ||
       !sizes ||
+      !description ||
       !price ||
-      !colorId ||
-      !description
+      !image ||
+      !categoryId ||
+      !colorId
     ) {
       res.status(400).json({ error: 'fill all fields' });
     }

@@ -50,7 +50,7 @@ export default function UpdateModal() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { mutateAsync } = useUpdQueryHook();
+  const { mutateAsync } = useUpdQueryHook(user!.token);
 
   const {
     handleSubmit,

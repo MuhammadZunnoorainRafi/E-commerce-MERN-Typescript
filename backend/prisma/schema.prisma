@@ -52,6 +52,7 @@ model Product {
   price       Decimal
   // stock       Int
   rating      String   @default("0")
+  isShown     Boolean  @default(true)
   storeId     String
   store       Store    @relation(fields: [storeId], references: [id])
   categoryId  String

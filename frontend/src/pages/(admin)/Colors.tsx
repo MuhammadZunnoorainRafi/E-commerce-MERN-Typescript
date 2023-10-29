@@ -4,7 +4,7 @@ import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { useAppDispatch } from '../../hooks/RTKHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { getColor } from '../../Slices/colorSlice';
 import CreateColorButtonModal from '../../components/modals/CreateColorModal';
 
@@ -17,6 +17,7 @@ interface IRows {
 function Colors() {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.authReducer);
 
   const { isLoading, data } = useQuery({
     queryKey: ['colors'],
@@ -32,6 +33,9 @@ function Colors() {
       const config = {
         data: {
           id,
+        },
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
         },
       };
       await axios.delete(`/api/admin/${storeId}/color`, config);
@@ -83,8 +87,8 @@ function Colors() {
                     <td className=" pl-6 pt-1">
                       <button
                         onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 ${
-                          delCLoading ? 'cursor-wait' : 'cursor-default'
+                        className={`hover:text-red-500 transition-colors ${
+                          delCLoading ? 'cursor-wait' : 'cursor-pointer'
                         }`}
                       >
                         <MdDeleteOutline />

@@ -5,7 +5,7 @@ import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 
-import { useAppDispatch } from '../../hooks/RTKHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
 import { getCategory } from '../../Slices/categorySlice';
 import CreateCategoryButtonModal from '../../components/modals/CreateCategoryModal';
 
@@ -16,6 +16,7 @@ interface IRows {
 }
 
 function Categories() {
+  const { user } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const { isLoading, data } = useQuery({
@@ -32,6 +33,9 @@ function Categories() {
       const config = {
         data: {
           id,
+        },
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
         },
       };
       await axios.delete(`/api/admin/${storeId}/category`, config);
@@ -85,8 +89,8 @@ function Categories() {
                     <td className=" pl-6 pt-1">
                       <button
                         onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 ${
-                          delSLoading ? 'cursor-wait' : 'cursor-default'
+                        className={`hover:text-red-500 transition-colors ${
+                          delSLoading ? 'cursor-wait' : 'cursor-pointer'
                         }`}
                       >
                         <MdDeleteOutline />

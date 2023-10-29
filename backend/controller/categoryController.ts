@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import prismaDB from '../config/prismaDB';
+import { IRequest } from '../middlewares/authMiddleware';
 
 export const createCategoryController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
     const { name } = req.body;
     const { id } = req.params;
 
@@ -32,7 +37,11 @@ export const createCategoryController = asyncHandler(
 
 export const getCategoryController = asyncHandler(
   async (req: Request, res: Response) => {
-    const getCategory = await prismaDB.category.findMany();
+    const getCategory = await prismaDB.category.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     if (getCategory) {
       res.status(200).json(getCategory);
     } else {
@@ -44,7 +53,11 @@ export const getCategoryController = asyncHandler(
 );
 
 export const deleteCategoryController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
     const { id } = req.body;
     if (!id) {
       res.status(400).json({

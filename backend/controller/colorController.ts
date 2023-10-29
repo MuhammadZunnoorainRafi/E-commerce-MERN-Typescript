@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import prismaDB from '../config/prismaDB';
+import { IRequest } from '../middlewares/authMiddleware';
 
 export const createColorController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
     const { name } = req.body;
     const { id } = req.params;
 
@@ -32,7 +37,9 @@ export const createColorController = asyncHandler(
 
 export const getColorController = asyncHandler(
   async (req: Request, res: Response) => {
-    const getColor = await prismaDB.color.findMany();
+    const getColor = await prismaDB.color.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
     if (getColor) {
       res.status(200).json(getColor);
     } else {
@@ -44,7 +51,11 @@ export const getColorController = asyncHandler(
 );
 
 export const deleteColorController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
     const { id } = req.body;
     if (!id) {
       res.status(400).json({

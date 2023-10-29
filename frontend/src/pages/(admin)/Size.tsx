@@ -82,8 +82,8 @@ function Size() {
                     <td className=" pl-6 pt-1">
                       <button
                         onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 ${
-                          delSLoading ? 'cursor-wait' : 'cursor-default'
+                        className={`hover:text-red-500 transition-colors ${
+                          delSLoading ? 'cursor-wait' : 'cursor-pointer'
                         }`}
                       >
                         <MdDeleteOutline />

@@ -13,9 +13,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAppSelector } from '../../hooks/RTKHooks';
 
 export default function CreateCategoryButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { user } = useAppSelector((state) => state.authReducer);
   const queryClient = useQueryClient();
 
   const categorySchema = z.object({
@@ -41,7 +43,16 @@ export default function CreateCategoryButtonModal() {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (data: TData) => {
-      const res = await axios.post(`/api/admin/${storeId}/category`, data);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
+        },
+      };
+      const res = await axios.post(
+        `/api/admin/${storeId}/category`,
+        data,
+        config
+      );
       return res.data;
     },
     onSuccess() {

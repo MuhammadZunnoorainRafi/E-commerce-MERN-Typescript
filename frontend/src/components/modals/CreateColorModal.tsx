@@ -13,17 +13,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAppSelector } from '../../hooks/RTKHooks';
+
+const colorSchema = z.object({
+  name: z
+    .string()
+    .nonempty('Enter Name')
+    .min(3, 'Color must be above 2 characters '),
+});
 
 export default function CreateColorButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
-
-  const colorSchema = z.object({
-    name: z
-      .string()
-      .nonempty('Enter Name')
-      .min(3, 'Color must be above 2 characters '),
-  });
+  const { user } = useAppSelector((state) => state.authReducer);
 
   type TData = z.infer<typeof colorSchema>;
 
@@ -41,7 +43,12 @@ export default function CreateColorButtonModal() {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (data: TData) => {
-      const res = await axios.post(`/api/admin/${storeId}/color`, data);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
+        },
+      };
+      const res = await axios.post(`/api/admin/${storeId}/color`, data, config);
       return res.data;
     },
     onSuccess() {
