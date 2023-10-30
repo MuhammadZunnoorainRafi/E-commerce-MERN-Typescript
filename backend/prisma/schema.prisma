@@ -47,10 +47,11 @@ model Color {
 model Product {
   id          String   @id @default(uuid())
   name        String
-  size        SizeT[]
+  slug        String
   description String
+  size        SizeT[]
   price       Decimal
-  // stock       Int
+  stock       Int
   rating      String   @default("0")
   isShown     Boolean  @default(true)
   storeId     String
