@@ -141,7 +141,7 @@ function CreateProduct() {
             placeholder="Enter your Image"
             {...register('image')}
             type="file"
-            accept="image/jpg,image/png,image/jpeg"
+            accept="image/*"
           />
 
           <p className="text-red-500 text-sm">{errors.image?.message}</p>
