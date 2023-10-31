@@ -98,10 +98,10 @@ export const updateProductController = asyncHandler(
   }
 );
 
-export const getProductController = asyncHandler(
-  async (req: Request, res: Response) => {
-    const allProducts = await prismaDB.product.findMany({
-      orderBy: { cr },
-    });
-  }
-);
+// export const getProductController = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const allProducts = await prismaDB.product.findMany({
+//       // orderBy: { cr },
+//     });
+//   }
+// );
