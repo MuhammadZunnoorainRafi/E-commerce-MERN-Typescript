@@ -80,20 +80,28 @@ export const updateProductController = asyncHandler(
       return;
     }
 
-    // const updatedProduct = await prismaDB.product.update({
-    //   data: {
-    //     ...req.body,
-    //   },
-    //   where: {
-    //     slug: req.params.slug,
-    //   },
-    // });
+    const updatedProduct = await prismaDB.product.update({
+      data: {
+        ...req.body,
+      },
+      where: {
+        slug: req.params.slug,
+      },
+    });
 
-    // if (updatedProduct) {
-    //   res.status(200).send('Product is updated');
-    // } else {
-    //   res.status(400);
-    //   throw new Error('Product is not updated');
-    // }
+    if (updatedProduct) {
+      res.status(200).send('Product is updated');
+    } else {
+      res.status(400);
+      throw new Error('Product is not updated');
+    }
   }
 );
+
+// export const getProductController = asyncHandler(
+//   async (req: Request, res: Response) => {
+//     const allProducts = await prismaDB.product.findMany({
+//       orderBy: { c },
+//     });
+//   }
+// );
