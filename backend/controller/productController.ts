@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import prismaDB from '../config/prismaDB';
 import { productPatchSchema } from '../utils/schemas';
 import { fromZodError } from 'zod-validation-error';
 import { IRequest } from '../middlewares/authMiddleware';
+import { genSlug } from '../utils/genSlug';
 
 export const createProductController = asyncHandler(
   async (req: IRequest, res: Response) => {
@@ -12,8 +13,16 @@ export const createProductController = asyncHandler(
       throw new Error('Only Admin is Authorized for this route');
     }
 
-    const { name, image, categoryId, sizes, price, colorId, description } =
-      req.body;
+    const {
+      name,
+      image,
+      categoryId,
+      sizes,
+      price,
+      colorId,
+      description,
+      stock,
+    } = req.body;
 
     if (
       !name ||
@@ -22,7 +31,8 @@ export const createProductController = asyncHandler(
       !price ||
       !image ||
       !categoryId ||
-      !colorId
+      !colorId ||
+      !stock
     ) {
       res.status(400).json({ error: 'fill all fields' });
     }
@@ -31,6 +41,7 @@ export const createProductController = asyncHandler(
       data: {
         name,
         storeId: req.params.id,
+        slug: genSlug(name),
         images: {
           createMany: {
             data: [...image.map((val: { url: string }) => val)],
@@ -41,6 +52,7 @@ export const createProductController = asyncHandler(
             data: [...sizes.map((val: { label: string }) => val)],
           },
         },
+        stock,
         categoryId,
         price,
         description,
@@ -65,6 +77,31 @@ export const updateProductController = asyncHandler(
     if (!validation.success) {
       res.status(400);
       res.json(fromZodError(validation.error));
+      return;
     }
+
+    const updatedProduct = await prismaDB.product.update({
+      data: {
+        ...req.body,
+      },
+      where: {
+        slug: req.body.slug,
+      },
+    });
+
+    if (updatedProduct) {
+      res.status(200).send('Product is updated');
+    } else {
+      res.status(400);
+      throw new Error('Product is not updated');
+    }
+  }
+);
+
+export const getProductController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const allProducts = await prismaDB.product.findMany({
+      orderBy: { cr },
+    });
   }
 );

@@ -20,6 +20,7 @@ type TData = {
   price: number;
   categoryId: string;
   colorId: string;
+  stock: number;
   sizes: {
     label: string;
   }[];
@@ -33,14 +34,16 @@ const productSchema = z.object({
   image: z.any().refine((val) => val?.length > 0, 'Select Images'),
   name: z.string().nonempty('Enter Name'),
   description: z.string().nonempty('Enter description'),
+  stock: z
+    .number({
+      invalid_type_error: 'Enter stock',
+    })
+    .nonnegative('Enter positive number'),
   price: z
     .number({
       invalid_type_error: 'Enter Price ',
     })
     .nonnegative('Enter positive number'),
-  // stock: z.number({
-  //   invalid_type_error: 'Enter stock',
-  // }),
 
   categoryId: z.string().nonempty('Select Category'),
   // sizeId: z.string().nonempty('Select Size'),
@@ -49,6 +52,8 @@ const productSchema = z.object({
 });
 
 function CreateProduct() {
+  const { user } = useAppSelector((state) => state.authReducer);
+
   const queryClient = useQueryClient();
   const { category } = useAppSelector((state) => state.categoryReducer);
   const { color } = useAppSelector((state) => state.colorReducer);
@@ -71,12 +76,28 @@ function CreateProduct() {
 
   const { mutate } = useMutation({
     mutationFn: async (data: TData) => {
-      const res = await axios.post(`/api/admin/${storeId}/product`, data);
+      setIsLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
+        },
+      };
+      const res = await axios.post(
+        `/api/admin/${storeId}/product`,
+        data,
+        config
+      );
+      setIsLoading(false);
       return res.data;
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ['product'] });
+      toast.success('Product Created');
+      setProductSize([]);
       reset();
+    },
+    onError(error) {
+      toast.error(errorHandler(error as IError));
     },
   });
 
@@ -100,31 +121,27 @@ function CreateProduct() {
     colorId,
     description,
     image,
+    stock,
     categoryId,
   }: TData) => {
-    try {
-      setIsLoading(true);
-      const arr = [];
-      for (let i = 0; i < image.length; i++) {
-        const multipleImages = await uploadImageCloudinary(image[i]);
-        arr.push(multipleImages);
-      }
-      mutate({
-        name,
-        price,
-        colorId,
-        description,
-        image: arr,
-        categoryId,
-        sizes: productSize,
-      });
-      toast.success('Product Created');
-    } catch (error) {
-      toast.error(errorHandler(error as IError));
-    } finally {
-      setIsLoading(false);
+    setIsLoading(true);
+    const arr = [];
+    for (let i = 0; i < image.length; i++) {
+      const multipleImages = await uploadImageCloudinary(image[i]);
+      arr.push(multipleImages);
     }
-    // mutate(data);
+    mutate({
+      name,
+      stock,
+      price,
+      colorId,
+      description,
+      image: arr,
+      categoryId,
+      sizes: productSize,
+    });
+
+    setIsLoading(false);
   };
   return (
     <div>
@@ -163,6 +180,17 @@ function CreateProduct() {
             {...register('description')}
           />
           <p className="text-sm text-red-500">{errors.description?.message}</p>
+        </div>
+        <div className="space-y-[0.7]">
+          <Input
+            size="sm"
+            color={`${errors.stock?.message ? 'danger' : 'default'}`}
+            label="Stock"
+            {...register('stock', {
+              valueAsNumber: true,
+            })}
+          />
+          <p className="text-sm text-red-500">{errors.stock?.message}</p>
         </div>
         <div className="space-y-[0.7]">
           <Input

@@ -13,9 +13,11 @@ export const productPatchSchema = z.object({
     })
     .nonnegative('Enter positive number')
     .optional(),
-  // stock: z.number({
-  //   invalid_type_error: 'Enter stock',
-  // }),
+  stock: z
+    .number({
+      invalid_type_error: 'Enter stock',
+    })
+    .optional(),
 
   categoryId: z.string().nonempty('Select Category').optional(),
   // sizeId: z.string().nonempty('Select Size'),

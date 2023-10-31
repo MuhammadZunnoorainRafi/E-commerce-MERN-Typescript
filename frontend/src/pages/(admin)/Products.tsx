@@ -1,4 +1,4 @@
-import { Divider, Spinner } from '@nextui-org/react';
+import { Button, Divider, Spinner } from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
@@ -49,7 +49,9 @@ function Products() {
             Manage products for your store
           </p>
         </div>
-        <Link to={`/admin/${storeId}/products/create`}>+Add New</Link>
+        <Link to={`/admin/${storeId}/products/create`}>
+          <Button color="primary">+Add New</Button>
+        </Link>
       </div>
       <Divider className="my-5" />
 
