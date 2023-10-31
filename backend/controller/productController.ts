@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import prismaDB from '../config/prismaDB';
 import { productPatchSchema } from '../utils/schemas';
@@ -98,10 +98,15 @@ export const updateProductController = asyncHandler(
   }
 );
 
-// export const getProductController = asyncHandler(
-//   async (req: Request, res: Response) => {
-//     const allProducts = await prismaDB.product.findMany({
-//       orderBy: { c },
-//     });
-//   }
-// );
+export const getProductController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const allProducts = await prismaDB.product.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    if (allProducts) {
+      res.status(200).json(allProducts);
+    } else {
+      res.status(400).json('Getting products error');
+    }
+  }
+);
