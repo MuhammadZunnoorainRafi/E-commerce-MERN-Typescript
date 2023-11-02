@@ -102,6 +102,12 @@ export const getProductController = asyncHandler(
   async (req: Request, res: Response) => {
     const allProducts = await prismaDB.product.findMany({
       orderBy: { createdAt: 'desc' },
+      include: {
+        category: true,
+        color: true,
+        size: true,
+        images: true,
+      },
     });
     if (allProducts) {
       res.status(200).json(allProducts);

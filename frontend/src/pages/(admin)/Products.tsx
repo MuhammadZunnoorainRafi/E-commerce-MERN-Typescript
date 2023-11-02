@@ -1,18 +1,22 @@
-import { Button, Divider, Spinner } from '@nextui-org/react';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Spinner,
+} from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
 import axios from 'axios';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
 import CreateProductButtonModal from '../../components/modals/createProductModal';
 import { Link } from 'react-router-dom';
-
-interface IRows {
-  id: string;
-  name: string;
-  createdAt: string;
-}
+import { TProduct } from '../../types/productType';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -24,6 +28,8 @@ function Products() {
       return res.data;
     },
   });
+
+  console.log(data);
 
   const { mutate, isLoading: delSLoading } = useMutation({
     mutationFn: async (id: string) => {
@@ -63,34 +69,60 @@ function Products() {
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
               <th className="p-2 rounded-l-lg">Name</th>
-              <th className="p-2">Date</th>
-              <th className="p-2 rounded-r-lg">Action</th>
+              <th className="p-2">Category</th>
+              <th className="p-2 ">Color</th>
+              <th className="p-2 ">Date</th>
+              <th className="p-2 rounded-r-lg">Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr className=" text-center">
                 <td></td>
+                <td></td>
                 <td className="py-5">
                   <Spinner />
                 </td>
                 <td></td>
+                <td></td>
               </tr>
             ) : (
-              data.map((val: IRows) => {
+              data.map((val: TProduct) => {
                 return (
                   <tr key={val.id}>
-                    <td className="p-1">{val.name}</td>
+                    <td className="p-1 flex gap-2 items-center">
+                      <div>
+                        <img
+                          className="h-10 w-10 rounded-md object-cover"
+                          src={val.images[0].url}
+                          alt="image error"
+                        />
+                      </div>
+                      <p>{val.name}</p>
+                    </td>
+                    <td className="p-1">{val.category.name}</td>
+                    <td className="p-1">{val.color.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
-                    <td className=" pl-6 pt-1">
-                      <button
-                        onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 ${
-                          delSLoading ? 'cursor-wait' : 'cursor-default'
-                        }`}
-                      >
-                        <MdDeleteOutline />
-                      </button>
+                    <td className=" pt-1">
+                      <div className="relative flex ml-5 justify-start items-center gap-2">
+                        <Dropdown className="bg-background border-1 border-default-200">
+                          <DropdownTrigger>
+                            <Button
+                              isIconOnly
+                              radius="full"
+                              size="sm"
+                              variant="light"
+                            >
+                              <HiOutlineDotsVertical size={30} />
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu variant="flat">
+                            <DropdownItem>View</DropdownItem>
+                            <DropdownItem>Edit</DropdownItem>
+                            <DropdownItem color="danger">Delete</DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
                     </td>
                   </tr>
                 );
