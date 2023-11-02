@@ -17,28 +17,28 @@ interface IRows {
 function Products() {
   const queryClient = useQueryClient();
 
-  // const { isLoading, data } = useQuery({
-  //   queryKey: ['size'],
-  //   queryFn: async () => {
-  //     const res = await axios.get(`/api/admin/${storeId}/product`);
-  //     return res.data;
-  //   },
-  // });
+  const { isLoading, data } = useQuery({
+    queryKey: ['size'],
+    queryFn: async () => {
+      const res = await axios.get(`/api/admin/${storeId}/product`);
+      return res.data;
+    },
+  });
 
-  // const { mutate, isLoading: delSLoading } = useMutation({
-  //   mutationFn: async (id: string) => {
-  //     const config = {
-  //       data: {
-  //         id,
-  //       },
-  //     };
-  //     await axios.delete(`/api/admin/${storeId}/product`, config);
-  //     queryClient.invalidateQueries({ queryKey: ['size'] });
-  //   },
-  // });
-  // const handleDelete = async (id: string) => {
-  //   mutate(id);
-  // };
+  const { mutate, isLoading: delSLoading } = useMutation({
+    mutationFn: async (id: string) => {
+      const config = {
+        data: {
+          id,
+        },
+      };
+      await axios.delete(`/api/admin/${storeId}/product`, config);
+      queryClient.invalidateQueries({ queryKey: ['size'] });
+    },
+  });
+  const handleDelete = async (id: string) => {
+    mutate(id);
+  };
 
   return (
     <div>
@@ -58,7 +58,7 @@ function Products() {
       {/* Table */}
       <div className=" p-4 shadow-lg rounded-lg border border-slate-200">
         <table
-        // className={`w-full ${delSLoading ? 'cursor-wait' : 'cursor-default'}`}
+          className={`w-full ${delSLoading ? 'cursor-wait' : 'cursor-default'}`}
         >
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
@@ -67,7 +67,7 @@ function Products() {
               <th className="p-2 rounded-r-lg">Action</th>
             </tr>
           </thead>
-          {/* <tbody>
+          <tbody>
             {isLoading ? (
               <tr className=" text-center">
                 <td></td>
@@ -96,7 +96,7 @@ function Products() {
                 );
               })
             )}
-          </tbody> */}
+          </tbody>
         </table>
       </div>
     </div>

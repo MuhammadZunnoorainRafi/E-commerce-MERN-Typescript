@@ -48,7 +48,7 @@ const productSchema = z.object({
   categoryId: z.string().nonempty('Select Category'),
   // sizeId: z.string().nonempty('Select Size'),
   colorId: z.string().nonempty('Select Color'),
-  sizes: z.any().refine((val) => val.length > 0, 'Select Sizes'),
+  sizes: z.any().refine((val) => val.length > 0, 'Enter Sizes'),
 });
 
 function CreateProduct() {
@@ -103,7 +103,7 @@ function CreateProduct() {
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
-      setMessage('Select Size');
+      setMessage('Enter Sizes');
     } else if (sizeField.label !== '') {
       setProductSize([...productSize, sizeFieldData]);
       setSizeField({ label: '' });
@@ -146,7 +146,7 @@ function CreateProduct() {
   return (
     <div>
       <form
-        className="space-y-2 max-w-xl mx-auto"
+        className="space-y-4 max-w-xl mx-auto"
         onSubmit={handleSubmit(formSubmit)}
       >
         <div className="space-y-[0.7]">
@@ -181,43 +181,61 @@ function CreateProduct() {
           />
           <p className="text-sm text-red-500">{errors.description?.message}</p>
         </div>
-        <div className="space-y-[0.7]">
-          <Input
-            size="sm"
-            color={`${errors.stock?.message ? 'danger' : 'default'}`}
-            label="Stock"
-            {...register('stock', {
-              valueAsNumber: true,
-            })}
-          />
-          <p className="text-sm text-red-500">{errors.stock?.message}</p>
+        <div className="flex  items-center justify-center gap-4">
+          <div className="space-y-[0.7] flex-1">
+            <Input
+              size="sm"
+              color={`${errors.stock?.message ? 'danger' : 'default'}`}
+              label="Stock"
+              {...register('stock', {
+                valueAsNumber: true,
+              })}
+            />
+            <p className="text-sm text-red-500">{errors.stock?.message}</p>
+          </div>
+          <div className="space-y-[0.7] flex-1">
+            <Input
+              size="sm"
+              color={`${errors.price?.message ? 'danger' : 'default'}`}
+              label="Price"
+              {...register('price', {
+                valueAsNumber: true,
+              })}
+            />
+            <p className="text-sm text-red-500">{errors.price?.message}</p>
+          </div>
         </div>
-        <div className="space-y-[0.7]">
-          <Input
-            size="sm"
-            color={`${errors.price?.message ? 'danger' : 'default'}`}
-            label="Price"
-            {...register('price', {
-              valueAsNumber: true,
-            })}
-          />
-          <p className="text-sm text-red-500">{errors.price?.message}</p>
-        </div>
-
-        <div className="space-y-[0.7]">
-          <Select
-            {...register('colorId')}
-            size="sm"
-            color={errors.colorId?.message ? 'danger' : 'default'}
-            label="Select a Color"
-          >
-            {color.map((color) => (
-              <SelectItem key={color.id} value={color.id}>
-                {color.name}
-              </SelectItem>
-            ))}
-          </Select>
-          <p className="text-sm text-red-500">{errors.colorId?.message}</p>
+        <div className="flex items-center justify-center gap-4">
+          <div className="space-y-[0.7] flex-1">
+            <Select
+              {...register('colorId')}
+              size="sm"
+              color={errors.colorId?.message ? 'danger' : 'default'}
+              label="Select a Color"
+            >
+              {color.map((color) => (
+                <SelectItem key={color.id} value={color.id}>
+                  {color.name}
+                </SelectItem>
+              ))}
+            </Select>
+            <p className="text-sm text-red-500">{errors.colorId?.message}</p>
+          </div>
+          <div className="space-y-[0.7] flex-1">
+            <Select
+              {...register('categoryId')}
+              size="sm"
+              color={errors.categoryId?.message ? 'danger' : 'default'}
+              label="Select a category"
+            >
+              {category.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </Select>
+            <p className="text-sm text-red-500">{errors.categoryId?.message}</p>
+          </div>
         </div>
         <div className="space-y-[0.7]">
           <div className="flex space-x-1 mb-2 items-center justify-center">
@@ -258,21 +276,6 @@ function CreateProduct() {
               </div>
             ))}
           </div>
-        </div>
-        <div className="space-y-[0.7]">
-          <Select
-            {...register('categoryId')}
-            size="sm"
-            color={errors.categoryId?.message ? 'danger' : 'default'}
-            label="Select a category"
-          >
-            {category.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </Select>
-          <p className="text-sm text-red-500">{errors.categoryId?.message}</p>
         </div>
 
         {/*

@@ -48,8 +48,7 @@ export default function CreateColorButtonModal() {
           Authorization: `Bearer ${user!.token}`,
         },
       };
-      const res = await axios.post(`/api/admin/${storeId}/color`, data, config);
-      return res.data;
+      await axios.post(`/api/admin/${storeId}/color`, data, config);
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ['colors'] });

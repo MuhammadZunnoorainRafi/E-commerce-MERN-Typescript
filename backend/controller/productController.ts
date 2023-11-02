@@ -85,7 +85,7 @@ export const updateProductController = asyncHandler(
         ...req.body,
       },
       where: {
-        slug: req.params.slug,
+        id: req.body.id,
       },
     });
 
