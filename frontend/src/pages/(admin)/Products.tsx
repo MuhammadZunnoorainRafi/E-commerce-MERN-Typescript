@@ -7,16 +7,13 @@ import {
   DropdownTrigger,
   Spinner,
 } from '@nextui-org/react';
-import { MdDeleteOutline } from 'react-icons/md';
-import axios from 'axios';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
-import { storeId } from '../../utils/getStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import moment from 'moment';
-import CreateSizeButtonModal from '../../components/shared/CreateSizeModal';
-import CreateProductButtonModal from '../../components/modals/createProductModal';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { TProduct } from '../../types/productType';
+import { storeId } from '../../utils/getStore';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -28,8 +25,6 @@ function Products() {
       return res.data;
     },
   });
-
-  console.log(data);
 
   const { mutate, isLoading: delSLoading } = useMutation({
     mutationFn: async (id: string) => {
@@ -113,12 +108,19 @@ function Products() {
                               size="sm"
                               variant="light"
                             >
-                              <HiOutlineDotsVertical size={30} />
+                              <HiOutlineDotsVertical size={22} />
                             </Button>
                           </DropdownTrigger>
                           <DropdownMenu variant="flat">
                             <DropdownItem>View</DropdownItem>
-                            <DropdownItem>Edit</DropdownItem>
+                            <DropdownItem>
+                              <Link
+                                className="block"
+                                to={`/admin/${storeId}/products/${val.slug}/edit`}
+                              >
+                                Edit
+                              </Link>
+                            </DropdownItem>
                             <DropdownItem color="danger">Delete</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
