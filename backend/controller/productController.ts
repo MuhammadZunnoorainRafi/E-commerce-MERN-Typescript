@@ -116,3 +116,20 @@ export const getProductController = asyncHandler(
     }
   }
 );
+
+export const getSingleProductController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const singleProduct = await prismaDB.product.findUnique({
+      where: {
+        slug: req.params.slug,
+      },
+    });
+
+    if (!singleProduct) {
+      res.status(400);
+      throw new Error('Product not found');
+    } else {
+      res.status(200).json(singleProduct);
+    }
+  }
+);
