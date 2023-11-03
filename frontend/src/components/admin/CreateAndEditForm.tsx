@@ -27,7 +27,7 @@ type TData = {
   }[];
 };
 
-type TProductSize = {
+export type TProductSize = {
   label: string;
 }[];
 
@@ -61,7 +61,10 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [productSize, setProductSize] = useState<TProductSize | []>([]);
+  const [productSize, setProductSize] = useState<TProductSize | []>(
+    product?.size ? product.size : []
+  );
+
   const [sizeField, setSizeField] = useState({
     label: '',
   });
@@ -69,11 +72,18 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const {
     register,
     formState: { errors },
+    getValues,
     handleSubmit,
     reset,
   } = useForm<TData>({
+    defaultValues: {
+      colorId: product?.colorId,
+    },
     resolver: zodResolver(productSchema),
   });
+
+  console.log(getValues('colorId'), 'getValues');
+  console.log(product.colorId);
 
   const { mutate } = useMutation({
     mutationFn: async (data: TData) => {
@@ -144,6 +154,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
 
     setIsLoading(false);
   };
+
+  console.log(product);
   return (
     <div>
       <form
@@ -166,6 +178,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         </div>
         <div className="space-y-[0.7]">
           <Input
+            defaultValue={product?.name}
             size="sm"
             color={`${errors.name?.message ? 'danger' : 'default'}`}
             label="Name"
@@ -186,6 +199,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         <div className="flex  items-center justify-center gap-4">
           <div className="space-y-[0.7] flex-1">
             <Input
+              defaultValue={product?.stock}
               size="sm"
               color={`${errors.stock?.message ? 'danger' : 'default'}`}
               label="Stock"
@@ -197,6 +211,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           </div>
           <div className="space-y-[0.7] flex-1">
             <Input
+              defaultValue={product?.price}
               size="sm"
               color={`${errors.price?.message ? 'danger' : 'default'}`}
               label="Price"
@@ -231,7 +246,11 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
               label="Select a category"
             >
               {category.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
+                <SelectItem
+                  defaultValue={product?.category.name}
+                  key={category.id}
+                  value={category.id}
+                >
                   {category.name}
                 </SelectItem>
               ))}

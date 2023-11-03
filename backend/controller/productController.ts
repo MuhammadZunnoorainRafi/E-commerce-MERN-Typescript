@@ -123,6 +123,12 @@ export const getSingleProductController = asyncHandler(
       where: {
         slug: req.params.slug,
       },
+      include: {
+        category: true,
+        color: true,
+        size: true,
+        images: true,
+      },
     });
 
     if (!singleProduct) {
