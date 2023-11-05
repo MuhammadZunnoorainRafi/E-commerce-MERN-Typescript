@@ -82,9 +82,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     resolver: zodResolver(productSchema),
   });
 
-  console.log(getValues('colorId'), 'getValues');
-  console.log(product.colorId);
-
   const { mutate } = useMutation({
     mutationFn: async (data: TData) => {
       setIsLoading(true);
@@ -93,13 +90,23 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           Authorization: `Bearer ${user!.token}`,
         },
       };
-      const res = await axios.post(
-        `/api/admin/${storeId}/product`,
-        data,
-        config
-      );
-      setIsLoading(false);
-      return res.data;
+      if (product) {
+        const res = await axios.patch(
+          `/api/admin/${storeId}/product`,
+          data,
+          config
+        );
+        setIsLoading(false);
+        return res.data;
+      } else {
+        const res = await axios.post(
+          `/api/admin/${storeId}/product`,
+          data,
+          config
+        );
+        setIsLoading(false);
+        return res.data;
+      }
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ['product'] });
