@@ -141,16 +141,20 @@ export const getSingleProductController = asyncHandler(
 );
 
 export const deleteProductController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
     const { id } = req.body;
-    if (id) {
+    if (!id) {
       res.status(401);
       throw new Error('Product ID not found');
     }
 
     const deleteProduct = await prismaDB.product.delete({
       where: {
-        id,
+        id: id,
       },
     });
     if (deleteProduct) {

@@ -1,4 +1,4 @@
-import CreateAndEditForm from '../../components/admin/createAndEditForm';
+import CreateAndEditForm from '../../components/admin/CreateAndEditForm';
 
 function CreateProduct() {
   return (

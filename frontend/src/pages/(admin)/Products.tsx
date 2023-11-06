@@ -14,12 +14,16 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { TProduct } from '../../types/productType';
 import { storeId } from '../../utils/getStore';
+import { toast } from 'sonner';
+import { type IError, errorHandler } from '../../utils/errorHandler';
+import { useAppSelector } from '../../hooks/RTKHooks';
 
 function Products() {
   const queryClient = useQueryClient();
+  const { user } = useAppSelector((state) => state.authReducer);
 
   const { isLoading, data } = useQuery({
-    queryKey: ['size'],
+    queryKey: ['product'],
     queryFn: async () => {
       const res = await axios.get(`/api/admin/${storeId}/product`);
       return res.data;
@@ -29,15 +33,25 @@ function Products() {
   const { mutate, isLoading: delSLoading } = useMutation({
     mutationFn: async (id: string) => {
       const config = {
+        headers: {
+          Authorization: `Bearer ${user!.token}`,
+        },
         data: {
           id,
         },
       };
       await axios.delete(`/api/admin/${storeId}/product`, config);
-      queryClient.invalidateQueries({ queryKey: ['size'] });
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['product'] });
+      toast.success('Deleted');
+    },
+    onError(error) {
+      toast.error(errorHandler(error as IError));
     },
   });
   const handleDelete = async (id: string) => {
+    console.log(id, 'prodID');
     mutate(id);
   };
 
@@ -100,34 +114,38 @@ function Products() {
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pt-1">
                       <div className="relative flex ml-5 justify-start items-center gap-2">
-                        <Dropdown className="bg-background border-1 border-default-200">
-                          <DropdownTrigger>
-                            <Button
-                              isIconOnly
-                              radius="full"
-                              size="sm"
-                              variant="light"
-                            >
-                              <HiOutlineDotsVertical size={22} />
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu variant="flat">
-                            <DropdownItem>View</DropdownItem>
-                            <DropdownItem>
-                              <Link
-                                className="block"
-                                to={`/admin/${storeId}/products/${val.slug}/edit`}
+                        {delSLoading ? (
+                          <Spinner color="danger" />
+                        ) : (
+                          <Dropdown className="bg-background border-1 border-default-200">
+                            <DropdownTrigger>
+                              <Button
+                                isIconOnly
+                                radius="full"
+                                size="sm"
+                                variant="light"
                               >
-                                Edit
-                              </Link>
-                            </DropdownItem>
-                            <DropdownItem color="danger">
-                              <button onClick={() => handleDelete(val.id)}>
-                                Delete
-                              </button>
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
+                                <HiOutlineDotsVertical size={22} />
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu variant="flat">
+                              <DropdownItem>
+                                <Link
+                                  className="block"
+                                  to={`/admin/${storeId}/products/${val.slug}/edit`}
+                                >
+                                  Edit
+                                </Link>
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => handleDelete(val.id)}
+                                color="danger"
+                              >
+                                {delSLoading ? 'Loading...' : 'Delete'}
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        )}
                       </div>
                     </td>
                   </tr>

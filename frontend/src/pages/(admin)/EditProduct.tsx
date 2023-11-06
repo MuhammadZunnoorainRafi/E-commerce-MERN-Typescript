@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import CreateAndEditForm from '../../components/admin/createAndEditForm';
+import CreateAndEditForm from '../../components/admin/CreateAndEditForm';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';

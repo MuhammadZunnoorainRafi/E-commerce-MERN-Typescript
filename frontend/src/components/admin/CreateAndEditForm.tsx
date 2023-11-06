@@ -11,6 +11,7 @@ import { type IError, errorHandler } from '../../utils/errorHandler';
 import { toast } from 'sonner';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { TProduct } from '../../types/productType';
+import { useNavigate } from 'react-router-dom';
 
 type TData = {
   name: string;
@@ -54,6 +55,7 @@ const productSchema = z.object({
 
 function CreateAndEditForm({ product }: { product?: TProduct }) {
   const { user } = useAppSelector((state) => state.authReducer);
+  const navigate = useNavigate();
 
   const queryClient = useQueryClient();
   const { category } = useAppSelector((state) => state.categoryReducer);
@@ -117,6 +119,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       queryClient.invalidateQueries({ queryKey: ['product'] });
       toast.success('Product Created');
       setProductSize([]);
+      navigate(`/admin/${storeId}/products`);
       reset();
     },
     onError(error) {
