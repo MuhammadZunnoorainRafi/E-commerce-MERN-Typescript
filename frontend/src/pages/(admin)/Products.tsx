@@ -121,7 +121,11 @@ function Products() {
                                 Edit
                               </Link>
                             </DropdownItem>
-                            <DropdownItem color="danger">Delete</DropdownItem>
+                            <DropdownItem color="danger">
+                              <button onClick={() => handleDelete(val.id)}>
+                                Delete
+                              </button>
+                            </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
                       </div>

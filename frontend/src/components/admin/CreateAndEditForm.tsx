@@ -72,15 +72,20 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const {
     register,
     formState: { errors },
-    getValues,
     handleSubmit,
+    getValues,
     reset,
   } = useForm<TData>({
     defaultValues: {
-      colorId: product?.colorId,
+      sizes: product
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (product.size[product.size.length - 1].label as any)
+        : '',
     },
     resolver: zodResolver(productSchema),
   });
+
+  console.log(getValues('image'));
 
   const { mutate } = useMutation({
     mutationFn: async (data: TData) => {
@@ -148,6 +153,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       const multipleImages = await uploadImageCloudinary(image[i]);
       arr.push(multipleImages);
     }
+    console.log(image, 'imageAWEWQE');
     mutate({
       name,
       stock,
@@ -162,7 +168,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     setIsLoading(false);
   };
 
-  console.log(product);
   return (
     <div>
       <form
@@ -234,6 +239,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
             <Select
               {...register('colorId')}
               size="sm"
+              defaultSelectedKeys={product ? [product?.colorId] : []}
               color={errors.colorId?.message ? 'danger' : 'default'}
               label="Select a Color"
             >
@@ -249,6 +255,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
             <Select
               {...register('categoryId')}
               size="sm"
+              defaultSelectedKeys={product ? [product?.categoryId] : []}
               color={errors.categoryId?.message ? 'danger' : 'default'}
               label="Select a category"
             >

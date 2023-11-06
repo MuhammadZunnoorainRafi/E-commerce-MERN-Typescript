@@ -139,3 +139,25 @@ export const getSingleProductController = asyncHandler(
     }
   }
 );
+
+export const deleteProductController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.body;
+    if (id) {
+      res.status(401);
+      throw new Error('Product ID not found');
+    }
+
+    const deleteProduct = await prismaDB.product.delete({
+      where: {
+        id,
+      },
+    });
+    if (deleteProduct) {
+      res.status(200).json({ message: 'Deleted successfully' });
+    } else {
+      res.status(400);
+      throw new Error('Product is not deleted');
+    }
+  }
+);
