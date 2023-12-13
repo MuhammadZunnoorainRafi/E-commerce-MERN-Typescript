@@ -1,33 +1,34 @@
-import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
+  Input,
   Modal,
+  ModalBody,
   ModalContent,
   ModalHeader,
-  ModalBody,
-  Button,
   useDisclosure,
-  Input,
 } from '@nextui-org/react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import { storeId } from '../../utils/getStore';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector } from '../../hooks/RTKHooks';
+import { usePostCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
+import { storeId } from '../../utils/getStore';
+import { toast } from 'sonner';
+import { type IError, errorHandler } from '../../utils/errorHandler';
 
+const categorySchema = z.object({
+  name: z
+    .string()
+    .nonempty('Enter Name')
+    .min(3, 'Category must be above 2 characters '),
+});
+
+export type TData = z.infer<typeof categorySchema>;
 export default function CreateCategoryButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { user } = useAppSelector((state) => state.authReducer);
   const queryClient = useQueryClient();
-
-  const categorySchema = z.object({
-    name: z
-      .string()
-      .nonempty('Enter Name')
-      .min(3, 'Category must be above 2 characters '),
-  });
-
-  type TData = z.infer<typeof categorySchema>;
 
   const {
     register,
@@ -41,29 +42,20 @@ export default function CreateCategoryButtonModal() {
     resolver: zodResolver(categorySchema),
   });
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: async (data: TData) => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-      };
-      const res = await axios.post(
-        `/api/admin/${storeId}/category`,
-        data,
-        config
-      );
-      return res.data;
-    },
-    onSuccess() {
+  const { mutateAsync, isLoading } = usePostCategoryQueryHook(
+    storeId,
+    user!.token
+  );
+
+  const formSubmit = async (data: TData) => {
+    try {
+      await mutateAsync(data);
       queryClient.invalidateQueries({ queryKey: ['category'] });
       reset();
       onClose();
-    },
-  });
-
-  const formSubmit = async (data: TData) => {
-    mutate(data);
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    }
   };
 
   return (

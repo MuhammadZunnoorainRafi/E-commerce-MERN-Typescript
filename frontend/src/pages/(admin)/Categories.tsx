@@ -1,13 +1,14 @@
 import { Divider, Spinner } from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
-import axios from 'axios';
 import { storeId } from '../../utils/getStore';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 
-import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
-import { getCategory } from '../../Slices/categorySlice';
+import { useAppSelector } from '../../hooks/RTKHooks';
 import CreateCategoryButtonModal from '../../components/modals/CreateCategoryModal';
+import {
+  useDeleteCategoryQueryHook,
+  useGetCategoryQueryHook,
+} from '../../hooks/categoryReactQueryHooks';
 
 interface IRows {
   id: string;
@@ -17,31 +18,12 @@ interface IRows {
 
 function Categories() {
   const { user } = useAppSelector((state) => state.authReducer);
-  const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
-  const { isLoading, data } = useQuery({
-    queryKey: ['category'],
-    queryFn: async () => {
-      const res = await axios.get(`/api/admin/${storeId}/category`);
-      dispatch(getCategory(res.data));
-      return res.data;
-    },
-  });
+  const { isLoading, data } = useGetCategoryQueryHook(storeId);
 
-  const { mutate, isLoading: delSLoading } = useMutation({
-    mutationFn: async (id: string) => {
-      const config = {
-        data: {
-          id,
-        },
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-      };
-      await axios.delete(`/api/admin/${storeId}/category`, config);
-      queryClient.invalidateQueries({ queryKey: ['category'] });
-    },
-  });
+  const { mutate, isLoading: delSLoading } = useDeleteCategoryQueryHook(
+    storeId,
+    user!.token
+  );
   const handleDelete = async (id: string) => {
     mutate(id);
   };
