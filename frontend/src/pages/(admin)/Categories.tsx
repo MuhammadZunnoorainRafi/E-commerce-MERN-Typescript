@@ -1,14 +1,13 @@
 import { Divider, Spinner } from '@nextui-org/react';
 import { MdDeleteOutline } from 'react-icons/md';
-import { storeId } from '../../utils/getStore';
 import moment from 'moment';
 
-import { useAppSelector } from '../../hooks/RTKHooks';
 import CreateCategoryButtonModal from '../../components/modals/CreateCategoryModal';
 import {
   useDeleteCategoryQueryHook,
   useGetCategoryQueryHook,
 } from '../../hooks/categoryReactQueryHooks';
+import { useAppSelector } from '../../hooks/RTKHooks';
 
 interface IRows {
   id: string;
@@ -17,11 +16,10 @@ interface IRows {
 }
 
 function Categories() {
-  const { user } = useAppSelector((state) => state.authReducer);
-  const { isLoading, data } = useGetCategoryQueryHook(storeId);
+  const { isLoading, data } = useGetCategoryQueryHook();
+  const { user } = useAppSelector((store) => store.authReducer);
 
   const { mutate, isLoading: delSLoading } = useDeleteCategoryQueryHook(
-    storeId,
     user!.token
   );
   const handleDelete = async (id: string) => {
@@ -59,6 +57,17 @@ function Categories() {
                 <td></td>
                 <td className="py-5">
                   <Spinner />
+                </td>
+                <td></td>
+              </tr>
+            ) : !data || data.length === 0 ? (
+              <tr>
+                <td></td>
+                <td className="text-center">
+                  <p className="my-10 text-slate-600 font-bold text-xl font-mono tracking-widest">
+                    {' '}
+                    No Data Yet!
+                  </p>
                 </td>
                 <td></td>
               </tr>

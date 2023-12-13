@@ -13,16 +13,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { usePostCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
-import { storeId } from '../../utils/getStore';
 import { toast } from 'sonner';
 import { type IError, errorHandler } from '../../utils/errorHandler';
-
-const categorySchema = z.object({
-  name: z
-    .string()
-    .nonempty('Enter Name')
-    .min(3, 'Category must be above 2 characters '),
-});
+import { categorySchema } from '../../schemas/categorySchema';
 
 export type TData = z.infer<typeof categorySchema>;
 export default function CreateCategoryButtonModal() {
@@ -42,10 +35,7 @@ export default function CreateCategoryButtonModal() {
     resolver: zodResolver(categorySchema),
   });
 
-  const { mutateAsync, isLoading } = usePostCategoryQueryHook(
-    storeId,
-    user!.token
-  );
+  const { mutateAsync, isLoading } = usePostCategoryQueryHook(user!.token);
 
   const formSubmit = async (data: TData) => {
     try {

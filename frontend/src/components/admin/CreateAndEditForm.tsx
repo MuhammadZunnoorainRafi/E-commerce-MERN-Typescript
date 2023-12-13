@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { TProduct } from '../../types/productType';
 import { useNavigate } from 'react-router-dom';
+import { useGetCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
 
 type TData = {
   name: string;
@@ -58,7 +59,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
-  const { category } = useAppSelector((state) => state.categoryReducer);
+  const { data: category } = useGetCategoryQueryHook();
   const { color } = useAppSelector((state) => state.colorReducer);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -262,15 +263,19 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
               color={errors.categoryId?.message ? 'danger' : 'default'}
               label="Select a category"
             >
-              {category.map((category) => (
-                <SelectItem
-                  defaultValue={product?.category.name}
-                  key={category.id}
-                  value={category.id}
-                >
-                  {category.name}
-                </SelectItem>
-              ))}
+              {!category ? (
+                <p>Loading</p>
+              ) : (
+                category.map((category) => (
+                  <SelectItem
+                    defaultValue={product?.category.name}
+                    key={category.id}
+                    value={category.id}
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))
+              )}
             </Select>
             <p className="text-sm text-red-500">{errors.categoryId?.message}</p>
           </div>

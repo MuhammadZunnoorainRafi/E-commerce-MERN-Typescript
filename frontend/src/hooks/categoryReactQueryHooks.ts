@@ -1,18 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { TData } from '../components/modals/CreateCategoryModal';
+import { storeId } from '../utils/getStore';
+import { TCategory } from '../types/categoryType';
 
-export const useGetCategoryQueryHook = (storeId: string) => {
+export const useGetCategoryQueryHook = () => {
   return useQuery({
     queryKey: ['category'],
-    queryFn: async () => {
+    queryFn: async (): Promise<TCategory> => {
       const res = await axios.get(`/api/admin/${storeId}/category`);
       return res.data;
     },
   });
 };
 
-export const useDeleteCategoryQueryHook = (storeId: string, token: string) => {
+export const useDeleteCategoryQueryHook = (token: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -30,7 +32,7 @@ export const useDeleteCategoryQueryHook = (storeId: string, token: string) => {
   });
 };
 
-export const usePostCategoryQueryHook = (storeId: string, token: string) => {
+export const usePostCategoryQueryHook = (token: string) => {
   return useMutation({
     mutationFn: async (data: TData) => {
       const config = {
