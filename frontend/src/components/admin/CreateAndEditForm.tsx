@@ -263,8 +263,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
               color={errors.categoryId?.message ? 'danger' : 'default'}
               label="Select a category"
             >
-              {!category ? (
-                <p>Loading</p>
+              {!category || category.length === 0 ? (
+                <SelectItem key={''}>No data yet</SelectItem>
               ) : (
                 category.map((category) => (
                   <SelectItem
