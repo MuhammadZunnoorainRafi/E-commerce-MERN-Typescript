@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "concurrently": "^8.2.1"
+    "@types/js-cookie": "^3.0.6",
+    "concurrently": "^8.2.1",
+    "js-cookie": "^3.0.5"
   }
 }

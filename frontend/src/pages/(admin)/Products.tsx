@@ -65,7 +65,7 @@ function Products() {
           </p>
         </div>
         <Link to={`/admin/${storeId}/products/create`}>
-          <Button color="primary">+Add New</Button>
+          <Button color="primary">+ Add New</Button>
         </Link>
       </div>
       <Divider className="my-5" />
@@ -93,6 +93,18 @@ function Products() {
                   <Spinner />
                 </td>
                 <td></td>
+                <td></td>
+              </tr>
+            ) : !data || data.length === 0 ? (
+              <tr>
+                <td></td>
+                <td></td>
+                <td className="text-center">
+                  <p className="my-10 text-slate-600 font-bold text-xl font-mono tracking-widest">
+                    {' '}
+                    No Data Yet!
+                  </p>
+                </td>
                 <td></td>
               </tr>
             ) : (
