@@ -153,7 +153,7 @@ function Products() {
                                 onClick={() => handleDelete(val.id)}
                                 color="danger"
                               >
-                                {delSLoading ? 'Loading...' : 'Delete'}
+                                {delSLoading ? 'Deleting...' : 'Delete'}
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>

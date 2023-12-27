@@ -64,8 +64,6 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // @@index([sizeId])
-  // @@index([categoryId])
   @@index([colorId])
   @@index([storeId])
   @@index([categoryId])

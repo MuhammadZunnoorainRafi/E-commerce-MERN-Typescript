@@ -1,19 +1,20 @@
-import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Button,
+  Input,
   Modal,
+  ModalBody,
   ModalContent,
   ModalHeader,
-  ModalBody,
-  Button,
   useDisclosure,
-  Input,
 } from '@nextui-org/react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import { storeId } from '../../utils/getStore';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAppSelector } from '../../hooks/RTKHooks';
+import { usePostColorQueryHook } from '../../hooks/colorReactQueryHooks';
+import { errorHandler, type IError } from '../../utils/errorHandler';
 
 const colorSchema = z.object({
   name: z
@@ -21,13 +22,12 @@ const colorSchema = z.object({
     .nonempty('Enter Name')
     .min(3, 'Color must be above 2 characters '),
 });
+export type TData = z.infer<typeof colorSchema>;
 
 export default function CreateColorButtonModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
-
-  type TData = z.infer<typeof colorSchema>;
 
   const {
     register,
@@ -41,24 +41,17 @@ export default function CreateColorButtonModal() {
     resolver: zodResolver(colorSchema),
   });
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: async (data: TData) => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-      };
-      await axios.post(`/api/admin/${storeId}/color`, data, config);
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['colors'] });
-      reset();
-      onClose();
-    },
-  });
+  const { mutateAsync, isLoading } = usePostColorQueryHook(user!.token);
 
   const formSubmit = async (data: TData) => {
-    mutate(data);
+    try {
+      await mutateAsync(data);
+      queryClient.invalidateQueries({ queryKey: ['category'] });
+      reset();
+      onClose();
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    }
   };
 
   return (
