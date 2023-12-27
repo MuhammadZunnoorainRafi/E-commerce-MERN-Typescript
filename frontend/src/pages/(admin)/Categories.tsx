@@ -1,13 +1,21 @@
-import { Divider, Spinner } from '@nextui-org/react';
-import { MdDeleteOutline } from 'react-icons/md';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Spinner,
+} from '@nextui-org/react';
 import moment from 'moment';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 
 import CreateCategoryButtonModal from '../../components/modals/CreateCategoryModal';
+import { useAppSelector } from '../../hooks/RTKHooks';
 import {
   useDeleteCategoryQueryHook,
   useGetCategoryQueryHook,
 } from '../../hooks/categoryReactQueryHooks';
-import { useAppSelector } from '../../hooks/RTKHooks';
 
 interface IRows {
   id: string;
@@ -22,7 +30,8 @@ function Categories() {
   const { mutate, isLoading: delSLoading } = useDeleteCategoryQueryHook(
     user!.token
   );
-  const handleDelete = async (id: string) => {
+
+  const handleDelete = (id: string) => {
     mutate(id);
   };
 
@@ -77,15 +86,49 @@ function Categories() {
                   <tr key={val.id}>
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
-                    <td className=" pl-6 pt-1">
-                      <button
-                        onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 transition-colors ${
-                          delSLoading ? 'cursor-wait' : 'cursor-pointer'
-                        }`}
-                      >
-                        <MdDeleteOutline />
-                      </button>
+                    <td className=" pt-1">
+                      <div className="relative flex ml-5 justify-start items-center gap-2">
+                        <Dropdown
+                          placement="bottom-end"
+                          className="bg-background border-1 border-default-200"
+                        >
+                          <DropdownTrigger>
+                            <Button
+                              isIconOnly
+                              radius="full"
+                              size="sm"
+                              variant="light"
+                            >
+                              <HiOutlineDotsVertical size={22} />
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu
+                            closeOnSelect={false}
+                            aria-label="test"
+                            variant="flat"
+                          >
+                            <DropdownItem>
+                              <CreateCategoryButtonModal
+                                action="Edit"
+                                categoryData={val}
+                              />
+                            </DropdownItem>
+                            <DropdownItem
+                              className="relative"
+                              onClick={() => handleDelete(val.id)}
+                              color="danger"
+                            >
+                              {delSLoading ? (
+                                <span className="flex items-center justify-start gap-2">
+                                  Deleting <Spinner size="sm" color="danger" />
+                                </span>
+                              ) : (
+                                'Delete'
+                              )}
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
                     </td>
                   </tr>
                 );

@@ -10,15 +10,22 @@ import {
 } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { usePostCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
-import { toast } from 'sonner';
-import { type IError, errorHandler } from '../../utils/errorHandler';
 import { categorySchema } from '../../schemas/categorySchema';
+import { errorHandler, type IError } from '../../utils/errorHandler';
 
 export type TData = z.infer<typeof categorySchema>;
-export default function CreateCategoryButtonModal() {
+type Props = {
+  action?: string;
+  categoryData?: TData;
+};
+export default function CreateCategoryButtonModal({
+  action = '+ Add New',
+  categoryData,
+}: Props) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { user } = useAppSelector((state) => state.authReducer);
   const queryClient = useQueryClient();
@@ -30,7 +37,7 @@ export default function CreateCategoryButtonModal() {
     reset,
   } = useForm<TData>({
     defaultValues: {
-      name: '',
+      name: categoryData?.name || '',
     },
     resolver: zodResolver(categorySchema),
   });
@@ -51,14 +58,14 @@ export default function CreateCategoryButtonModal() {
   return (
     <>
       <Button color="primary" onPress={onOpen}>
-        + Add New
+        {action}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create Category
+                {action} Category
               </ModalHeader>
               <ModalBody className="pb-3">
                 <form onSubmit={handleSubmit(formSubmit)}>
@@ -79,7 +86,7 @@ export default function CreateCategoryButtonModal() {
                     isLoading={isLoading}
                     isDisabled={isLoading}
                   >
-                    Create
+                    {action}
                   </Button>
                 </form>
               </ModalBody>

@@ -99,7 +99,7 @@ export default function TNavbar({
           ></Switch>
         </NavbarItem>
         {user ? (
-          <Dropdown placement="bottom-end">
+          <Dropdown placement="bottom-end" backdrop="blur">
             <DropdownTrigger>
               <Avatar
                 isBordered

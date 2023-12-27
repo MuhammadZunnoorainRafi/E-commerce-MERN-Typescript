@@ -116,7 +116,7 @@ export default function AdminNavbar({
           ></Switch>
         </NavbarItem>
         {user ? (
-          <Dropdown placement="bottom-end">
+          <Dropdown placement="bottom-end" backdrop="blur">
             <DropdownTrigger>
               <Avatar
                 isBordered
