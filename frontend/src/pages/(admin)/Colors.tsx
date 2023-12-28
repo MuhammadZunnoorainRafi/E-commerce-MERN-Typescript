@@ -1,12 +1,12 @@
 import { Divider, Spinner } from '@nextui-org/react';
-import { MdDeleteOutline } from 'react-icons/md';
-import axios from 'axios';
-import { storeId } from '../../utils/getStore';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
-import { useAppDispatch, useAppSelector } from '../../hooks/RTKHooks';
-import { getColor } from '../../Slices/colorSlice';
+import { MdDeleteOutline } from 'react-icons/md';
 import CreateColorButtonModal from '../../components/modals/CreateColorModal';
+import { useAppSelector } from '../../hooks/RTKHooks';
+import {
+  useDeleteColorQueryHook,
+  useGetColorQueryHook,
+} from '../../hooks/colorReactQueryHooks';
 
 interface IRows {
   id: string;
@@ -15,33 +15,13 @@ interface IRows {
 }
 
 function Colors() {
-  const queryClient = useQueryClient();
-  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.authReducer);
 
-  const { isLoading, data } = useQuery({
-    queryKey: ['colors'],
-    queryFn: async () => {
-      const res = await axios.get(`/api/admin/${storeId}/color`);
-      dispatch(getColor(res.data));
-      return res.data;
-    },
-  });
+  const { isLoading, data } = useGetColorQueryHook();
 
-  const { mutate, isLoading: delCLoading } = useMutation({
-    mutationFn: async (id: string) => {
-      const config = {
-        data: {
-          id,
-        },
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-      };
-      await axios.delete(`/api/admin/${storeId}/color`, config);
-      queryClient.invalidateQueries({ queryKey: ['colors'] });
-    },
-  });
+  const { mutate, isLoading: delCLoading } = useDeleteColorQueryHook(
+    user!.token
+  );
   const handleDelete = async (id: string) => {
     mutate(id);
   };
@@ -78,6 +58,17 @@ function Colors() {
                 </td>
                 <td></td>
               </tr>
+            ) : !data || data.length === 0 ? (
+              <tr>
+                <td></td>
+                <td className="text-center">
+                  <p className="my-10 text-slate-600 font-bold text-xl font-mono tracking-widest">
+                    {' '}
+                    No Data Yet!
+                  </p>
+                </td>
+                <td></td>
+              </tr>
             ) : (
               data.map((val: IRows) => {
                 return (
@@ -93,6 +84,7 @@ function Colors() {
                       >
                         <MdDeleteOutline />
                       </button>
+                      <CreateColorButtonModal action="Edit" colorData={val} />
                     </td>
                   </tr>
                 );

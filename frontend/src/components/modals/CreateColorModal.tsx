@@ -23,8 +23,14 @@ const colorSchema = z.object({
     .min(3, 'Color must be above 2 characters '),
 });
 export type TData = z.infer<typeof colorSchema>;
-
-export default function CreateColorButtonModal() {
+type Props = {
+  action?: string;
+  colorData?: { name: string; id: string };
+};
+export default function CreateColorButtonModal({
+  action = '+ Add New',
+  colorData,
+}: Props) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
@@ -35,9 +41,6 @@ export default function CreateColorButtonModal() {
     handleSubmit,
     reset,
   } = useForm<TData>({
-    defaultValues: {
-      name: '',
-    },
     resolver: zodResolver(colorSchema),
   });
 
@@ -57,19 +60,20 @@ export default function CreateColorButtonModal() {
   return (
     <>
       <Button color="primary" onPress={onOpen}>
-        + Add New
+        {action}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create Color
+                {action} Color
               </ModalHeader>
               <ModalBody className="pb-3">
                 <form onSubmit={handleSubmit(formSubmit)}>
                   <div className="py-2 space-y-1">
                     <Input
+                      defaultValue={colorData?.name}
                       size="sm"
                       color={`${errors.name?.message ? 'danger' : 'default'}`}
                       label="Name"
@@ -85,7 +89,7 @@ export default function CreateColorButtonModal() {
                     isLoading={isLoading}
                     isDisabled={isLoading}
                   >
-                    Create
+                    {action}
                   </Button>
                 </form>
               </ModalBody>

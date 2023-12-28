@@ -39,9 +39,7 @@ export default function CreateCategoryButtonModal({
     handleSubmit,
     reset,
   } = useForm<TData>({
-    // defaultValues: {
-    //   name: categoryData?.name || '',
-    // },
+  
     resolver: zodResolver(categorySchema),
   });
 

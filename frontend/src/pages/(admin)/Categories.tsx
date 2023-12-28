@@ -103,11 +103,12 @@ function Categories() {
                             </Button>
                           </DropdownTrigger>
                           <DropdownMenu
-                            // closeOnSelect={false}
-                            aria-label="test"
+                            className="relative z-0"
+                            closeOnSelect={false}
+                            aria-label="Static Actions"
                             variant="flat"
                           >
-                            <DropdownItem key="edit">
+                            <DropdownItem className="relative z-50" key="edit">
                               <CreateCategoryButtonModal
                                 action="Edit"
                                 categoryData={val}
@@ -115,7 +116,7 @@ function Categories() {
                             </DropdownItem>
                             <DropdownItem
                               key="delete"
-                              onClick={() => handleDelete(val.id)}
+                              onPress={() => handleDelete(val.id)}
                               color="danger"
                             >
                               {delSLoading ? (
