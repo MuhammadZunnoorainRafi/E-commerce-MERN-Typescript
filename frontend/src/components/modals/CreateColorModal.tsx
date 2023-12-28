@@ -10,10 +10,14 @@ import {
 } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { FiEdit } from 'react-icons/fi';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useAppSelector } from '../../hooks/RTKHooks';
-import { usePostColorQueryHook } from '../../hooks/colorReactQueryHooks';
+import {
+  usePostColorQueryHook,
+  useUpdateColorQueryHook,
+} from '../../hooks/colorReactQueryHooks';
 import { errorHandler, type IError } from '../../utils/errorHandler';
 
 const colorSchema = z.object({
@@ -24,7 +28,7 @@ const colorSchema = z.object({
 });
 export type TData = z.infer<typeof colorSchema>;
 type Props = {
-  action?: string;
+  action?: 'Edit' | '+ Add New';
   colorData?: { name: string; id: string };
 };
 export default function CreateColorButtonModal({
@@ -45,11 +49,17 @@ export default function CreateColorButtonModal({
   });
 
   const { mutateAsync, isLoading } = usePostColorQueryHook(user!.token);
+  const { mutateAsync: editMutateAsync, isLoading: editIsLoading } =
+    useUpdateColorQueryHook(user!.token);
 
   const formSubmit = async (data: TData) => {
     try {
-      await mutateAsync(data);
-      queryClient.invalidateQueries({ queryKey: ['category'] });
+      if (colorData) {
+        await editMutateAsync({ name: data.name, colorId: colorData.id });
+      } else {
+        await mutateAsync(data);
+      }
+      queryClient.invalidateQueries({ queryKey: ['color'] });
       reset();
       onClose();
     } catch (error) {
@@ -59,9 +69,18 @@ export default function CreateColorButtonModal({
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
-        {action}
-      </Button>
+      {action === 'Edit' ? (
+        <button
+          className="hover:text-cyan-600 transition-colors"
+          onClick={onOpen}
+        >
+          <FiEdit />
+        </button>
+      ) : (
+        <Button color="primary" onPress={onOpen}>
+          + Add New
+        </Button>
+      )}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
@@ -86,8 +105,8 @@ export default function CreateColorButtonModal({
                   <Button
                     type="submit"
                     color="primary"
-                    isLoading={isLoading}
-                    isDisabled={isLoading}
+                    isLoading={isLoading || editIsLoading}
+                    isDisabled={isLoading || editIsLoading}
                   >
                     {action}
                   </Button>

@@ -43,10 +43,18 @@ export const usePostColorQueryHook = (token: string) => {
       const res = await axios.post(`/api/admin/${storeId}/color`, data, config);
       return res.data;
     },
-    // onSuccess() {
-    //   queryClient.invalidateQueries({ queryKey: ['color'] });
-    //   reset();
-    //   onClose();
-    // },
+  });
+};
+export const useUpdateColorQueryHook = (token: string) => {
+  return useMutation({
+    mutationFn: async (data: { name: string; colorId: string }) => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const res = await axios.put(`/api/admin/${storeId}/color`, data, config);
+      return res.data;
+    },
   });
 };

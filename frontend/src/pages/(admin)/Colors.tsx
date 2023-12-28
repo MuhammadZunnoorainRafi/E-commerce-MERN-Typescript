@@ -1,12 +1,8 @@
 import { Divider, Spinner } from '@nextui-org/react';
 import moment from 'moment';
-import { MdDeleteOutline } from 'react-icons/md';
 import CreateColorButtonModal from '../../components/modals/CreateColorModal';
-import { useAppSelector } from '../../hooks/RTKHooks';
-import {
-  useDeleteColorQueryHook,
-  useGetColorQueryHook,
-} from '../../hooks/colorReactQueryHooks';
+import DeleteTableActions from '../../components/modals/deleteTableActions';
+import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
 
 interface IRows {
   id: string;
@@ -15,16 +11,7 @@ interface IRows {
 }
 
 function Colors() {
-  const { user } = useAppSelector((state) => state.authReducer);
-
   const { isLoading, data } = useGetColorQueryHook();
-
-  const { mutate, isLoading: delCLoading } = useDeleteColorQueryHook(
-    user!.token
-  );
-  const handleDelete = async (id: string) => {
-    mutate(id);
-  };
 
   return (
     <div>
@@ -39,9 +26,7 @@ function Colors() {
 
       {/* Table */}
       <div className=" p-4 shadow-lg rounded-lg border border-slate-200">
-        <table
-          className={`w-full ${delCLoading ? 'cursor-wait' : 'cursor-default'}`}
-        >
+        <table className="w-full">
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
               <th className="p-2 rounded-l-lg">Name</th>
@@ -49,7 +34,7 @@ function Colors() {
               <th className="p-2 rounded-r-lg">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y ">
             {isLoading ? (
               <tr className=" text-center">
                 <td></td>
@@ -72,17 +57,12 @@ function Colors() {
             ) : (
               data.map((val: IRows) => {
                 return (
-                  <tr key={val.id}>
+                  <tr key={val.id} className="hover:bg-default-100">
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
-                    <td className=" pl-6 pt-1">
-                      <button
-                        onClick={() => handleDelete(val.id)}
-                        className={`hover:text-red-500 transition-colors ${
-                          delCLoading ? 'cursor-wait' : 'cursor-pointer'
-                        }`}
-                      >
-                        <MdDeleteOutline />
+                    <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
+                      <button>
+                        <DeleteTableActions id={val.id} type="color" />
                       </button>
                       <CreateColorButtonModal action="Edit" colorData={val} />
                     </td>

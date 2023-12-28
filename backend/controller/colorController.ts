@@ -34,6 +34,40 @@ export const createColorController = asyncHandler(
     }
   }
 );
+export const updateColorController = asyncHandler(
+  async (req: IRequest, res: Response) => {
+    if (!req.admin) {
+      res.status(401);
+      throw new Error('Only Admin is Authorized for this route');
+    }
+    const { name, colorId } = req.body;
+    const { id } = req.params;
+
+    if (!name || !id || !colorId) {
+      res.status(400).json({
+        error: 'name or id or colorId not found',
+      });
+    }
+
+    const color = await prismaDB.color.update({
+      where: {
+        id: colorId,
+      },
+      data: {
+        name,
+        storeId: id,
+      },
+    });
+
+    if (color) {
+      res.status(201).json(color);
+    } else {
+      res.status(401).json({
+        error: 'Something went wrong in creating color',
+      });
+    }
+  }
+);
 
 export const getColorController = asyncHandler(
   async (req: Request, res: Response) => {
