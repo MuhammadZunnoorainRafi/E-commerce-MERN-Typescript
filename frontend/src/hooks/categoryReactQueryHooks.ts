@@ -54,3 +54,21 @@ export const usePostCategoryQueryHook = (token: string) => {
     // },
   });
 };
+
+export const useUpdateCategoryQueryHook = (token: string) => {
+  return useMutation({
+    mutationFn: async (data: { name: string; categoryId: string }) => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const res = await axios.put(
+        `/api/admin/${storeId}/category`,
+        data,
+        config
+      );
+      return res.data;
+    },
+  });
+};

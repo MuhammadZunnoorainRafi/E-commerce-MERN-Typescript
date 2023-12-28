@@ -13,14 +13,17 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useAppSelector } from '../../hooks/RTKHooks';
-import { usePostCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
+import {
+  usePostCategoryQueryHook,
+  useUpdateCategoryQueryHook,
+} from '../../hooks/categoryReactQueryHooks';
 import { categorySchema } from '../../schemas/categorySchema';
 import { errorHandler, type IError } from '../../utils/errorHandler';
 
 export type TData = z.infer<typeof categorySchema>;
 type Props = {
   action?: string;
-  categoryData?: TData;
+  categoryData?: { name: string; id: string };
 };
 export default function CreateCategoryButtonModal({
   action = '+ Add New',
@@ -36,17 +39,23 @@ export default function CreateCategoryButtonModal({
     handleSubmit,
     reset,
   } = useForm<TData>({
-    defaultValues: {
-      name: categoryData?.name || '',
-    },
+    // defaultValues: {
+    //   name: categoryData?.name || '',
+    // },
     resolver: zodResolver(categorySchema),
   });
 
   const { mutateAsync, isLoading } = usePostCategoryQueryHook(user!.token);
+  const { mutateAsync: editMutateAsync, isLoading: editIsLoading } =
+    useUpdateCategoryQueryHook(user!.token);
 
   const formSubmit = async (data: TData) => {
     try {
-      await mutateAsync(data);
+      if (categoryData) {
+        await editMutateAsync({ name: data.name, categoryId: categoryData.id });
+      } else {
+        await mutateAsync(data);
+      }
       queryClient.invalidateQueries({ queryKey: ['category'] });
       reset();
       onClose();
@@ -56,10 +65,17 @@ export default function CreateCategoryButtonModal({
   };
 
   return (
-    <>
-      <Button color="primary" onPress={onOpen}>
-        {action}
-      </Button>
+    <div>
+      {action === 'Edit' ? (
+        <button className=" inline-block w-full text-left" onClick={onOpen}>
+          {action}
+        </button>
+      ) : (
+        <Button color="primary" onPress={onOpen}>
+          {action}
+        </Button>
+      )}
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
@@ -71,6 +87,8 @@ export default function CreateCategoryButtonModal({
                 <form onSubmit={handleSubmit(formSubmit)}>
                   <div className="py-2 space-y-1">
                     <Input
+                      defaultValue={categoryData?.name}
+                      labelPlacement="outside"
                       size="sm"
                       color={`${errors.name?.message ? 'danger' : 'default'}`}
                       label="Name"
@@ -83,8 +101,8 @@ export default function CreateCategoryButtonModal({
                   <Button
                     type="submit"
                     color="primary"
-                    isLoading={isLoading}
-                    isDisabled={isLoading}
+                    isLoading={isLoading || editIsLoading}
+                    isDisabled={isLoading || editIsLoading}
                   >
                     {action}
                   </Button>
@@ -94,6 +112,6 @@ export default function CreateCategoryButtonModal({
           )}
         </ModalContent>
       </Modal>
-    </>
+    </div>
   );
 }

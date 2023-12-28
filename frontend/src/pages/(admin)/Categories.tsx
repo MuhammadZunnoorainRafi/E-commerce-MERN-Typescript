@@ -87,7 +87,7 @@ function Categories() {
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pt-1">
-                      <div className="relative flex ml-5 justify-start items-center gap-2">
+                      <div className="flex  ml-5 justify-start items-center gap-2">
                         <Dropdown
                           placement="bottom-end"
                           className="bg-background border-1 border-default-200"
@@ -103,18 +103,18 @@ function Categories() {
                             </Button>
                           </DropdownTrigger>
                           <DropdownMenu
-                            closeOnSelect={false}
+                            // closeOnSelect={false}
                             aria-label="test"
                             variant="flat"
                           >
-                            <DropdownItem>
+                            <DropdownItem key="edit">
                               <CreateCategoryButtonModal
                                 action="Edit"
                                 categoryData={val}
                               />
                             </DropdownItem>
                             <DropdownItem
-                              className="relative"
+                              key="delete"
                               onClick={() => handleDelete(val.id)}
                               color="danger"
                             >
