@@ -19,6 +19,7 @@ import {
 } from '../../hooks/categoryReactQueryHooks';
 import { categorySchema } from '../../schemas/categorySchema';
 import { errorHandler, type IError } from '../../utils/errorHandler';
+import { FiEdit } from 'react-icons/fi';
 
 export type TData = z.infer<typeof categorySchema>;
 type Props = {
@@ -39,7 +40,6 @@ export default function CreateCategoryButtonModal({
     handleSubmit,
     reset,
   } = useForm<TData>({
-  
     resolver: zodResolver(categorySchema),
   });
 
@@ -65,12 +65,15 @@ export default function CreateCategoryButtonModal({
   return (
     <div>
       {action === 'Edit' ? (
-        <button className=" inline-block w-full text-left" onClick={onOpen}>
-          {action}
+        <button
+          className="hover:text-cyan-600 transition-colors"
+          onClick={onOpen}
+        >
+          <FiEdit />
         </button>
       ) : (
         <Button color="primary" onPress={onOpen}>
-          {action}
+          + Add New
         </Button>
       )}
 

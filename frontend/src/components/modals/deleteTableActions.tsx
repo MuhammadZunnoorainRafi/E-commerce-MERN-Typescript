@@ -10,6 +10,7 @@ import {
 import { MdDeleteOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { useDeleteColorQueryHook } from '../../hooks/colorReactQueryHooks';
+import { useDeleteCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
 
 function DeleteTableActions({
   type,
@@ -23,8 +24,16 @@ function DeleteTableActions({
 
   const { mutate: colorMutate, isLoading: colorLoading } =
     useDeleteColorQueryHook(user!.token);
+
+  const { mutate: categoryMutate, isLoading: categoryLoading } =
+    useDeleteCategoryQueryHook(user!.token);
+
   const handleDelete = async (id: string) => {
-    colorMutate(id);
+    if (type === 'color') {
+      colorMutate(id);
+    } else {
+      categoryMutate(id);
+    }
   };
 
   return (
@@ -48,8 +57,8 @@ function DeleteTableActions({
                 </Button>
                 <Button
                   color="danger"
-                  isLoading={colorLoading}
-                  isDisabled={colorLoading}
+                  isLoading={colorLoading || categoryLoading}
+                  isDisabled={colorLoading || categoryLoading}
                   onClick={() => handleDelete(id)}
                 >
                   Delete
