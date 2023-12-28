@@ -18,3 +18,18 @@ export type TProduct = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ProductTData = {
+  name: string;
+  image: {
+    url: string;
+  }[];
+  description: string;
+  price: number;
+  categoryId: string;
+  colorId: string;
+  stock: number;
+  sizes: {
+    label: string;
+  }[];
+};

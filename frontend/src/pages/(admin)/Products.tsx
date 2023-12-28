@@ -7,7 +7,7 @@ import {
   DropdownTrigger,
   Spinner,
 } from '@nextui-org/react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import moment from 'moment';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
@@ -17,39 +17,15 @@ import { storeId } from '../../utils/getStore';
 import { toast } from 'sonner';
 import { type IError, errorHandler } from '../../utils/errorHandler';
 import { useAppSelector } from '../../hooks/RTKHooks';
+import { useGetProductQuery } from '../../hooks/productReactQueryHooks';
 
 function Products() {
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
 
-  const { isLoading, data } = useQuery({
-    queryKey: ['product'],
-    queryFn: async () => {
-      const res = await axios.get(`/api/admin/${storeId}/product`);
-      return res.data;
-    },
-  });
+  const { isLoading, data } = useGetProductQuery()
 
-  const { mutate, isLoading: delSLoading } = useMutation({
-    mutationFn: async (id: string) => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-        data: {
-          id,
-        },
-      };
-      await axios.delete(`/api/admin/${storeId}/product`, config);
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      toast.success('Deleted');
-    },
-    onError(error) {
-      toast.error(errorHandler(error as IError));
-    },
-  });
+  const { mutate, isLoading: delSLoading } = ;
   const handleDelete = async (id: string) => {
     console.log(id, 'prodID');
     mutate(id);

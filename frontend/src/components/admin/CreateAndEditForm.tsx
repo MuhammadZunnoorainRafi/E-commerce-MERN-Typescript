@@ -1,66 +1,32 @@
 import { Button, Input, Select, SelectItem } from '@nextui-org/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
 import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
 import { useForm } from 'react-hook-form';
 import { storeId } from '../../utils/getStore';
 import { useState } from 'react';
 import { type IError, errorHandler } from '../../utils/errorHandler';
 import { toast } from 'sonner';
-import { useAppSelector } from '../../hooks/RTKHooks';
-import { TProduct } from '../../types/productType';
+import { ProductTData, TProduct } from '../../types/productType';
 import { useNavigate } from 'react-router-dom';
 import { useGetCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
-
-type TData = {
-  name: string;
-  image: {
-    url: string;
-  }[];
-  description: string;
-  price: number;
-  categoryId: string;
-  colorId: string;
-  stock: number;
-  sizes: {
-    label: string;
-  }[];
-};
+import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
+import { productSchema } from '../../schemas/productSchema';
+import {
+  useCreateProductQuery,
+  useUpdateProductQuery,
+} from '../../hooks/productReactQueryHooks';
 
 export type TProductSize = {
   label: string;
 }[];
 
-const productSchema = z.object({
-  image: z.any().refine((val) => val?.length > 0, 'Select Images'),
-  name: z.string().nonempty('Enter Name'),
-  description: z.string().nonempty('Enter description'),
-  stock: z
-    .number({
-      invalid_type_error: 'Enter stock',
-    })
-    .nonnegative('Enter positive number'),
-  price: z
-    .number({
-      invalid_type_error: 'Enter Price ',
-    })
-    .nonnegative('Enter positive number'),
-
-  categoryId: z.string().nonempty('Select Category'),
-  // sizeId: z.string().nonempty('Select Size'),
-  colorId: z.string().nonempty('Select Color'),
-  sizes: z.any().refine((val) => val.length > 0, 'Enter Sizes'),
-});
-
 function CreateAndEditForm({ product }: { product?: TProduct }) {
-  const { user } = useAppSelector((state) => state.authReducer);
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
   const { data: category } = useGetCategoryQueryHook();
-  const { color } = useAppSelector((state) => state.colorReducer);
+  const { data: color } = useGetColorQueryHook();
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -78,7 +44,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     handleSubmit,
     getValues,
     reset,
-  } = useForm<TData>({
+  } = useForm<ProductTData>({
     defaultValues: {
       sizes: product
         ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,43 +56,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
 
   console.log(getValues('image'));
 
-  const { mutate } = useMutation({
-    mutationFn: async (data: TData) => {
-      setIsLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user!.token}`,
-        },
-      };
-      if (product) {
-        const res = await axios.patch(
-          `/api/admin/${storeId}/product`,
-          data,
-          config
-        );
-        setIsLoading(false);
-        return res.data;
-      } else {
-        const res = await axios.post(
-          `/api/admin/${storeId}/product`,
-          data,
-          config
-        );
-        setIsLoading(false);
-        return res.data;
-      }
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      toast.success('Product Created');
-      setProductSize([]);
-      navigate(`/admin/${storeId}/products`);
-      reset();
-    },
-    onError(error) {
-      toast.error(errorHandler(error as IError));
-    },
-  });
+  const { mutate: productCreateMutate } = useCreateProductQuery();
+  const { mutate: productUpdateMutate } = useUpdateProductQuery();
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
@@ -150,7 +81,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     image,
     stock,
     categoryId,
-  }: TData) => {
+  }: ProductTData) => {
     setIsLoading(true);
     const arr = [];
     for (let i = 0; i < image.length; i++) {
@@ -158,16 +89,42 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       arr.push(multipleImages);
     }
     console.log(image, 'imageAWEWQE');
-    mutate({
-      name,
-      stock,
-      price,
-      colorId,
-      description,
-      image: arr,
-      categoryId,
-      sizes: productSize,
-    });
+
+    try {
+      setIsLoading(true);
+      if (product) {
+        productUpdateMutate({
+          name,
+          stock,
+          price,
+          colorId,
+          description,
+          image: arr,
+          categoryId,
+          sizes: productSize,
+        });
+      } else {
+        productCreateMutate({
+          name,
+          stock,
+          price,
+          colorId,
+          description,
+          image: arr,
+          categoryId,
+          sizes: productSize,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ['product'] });
+      toast.success('Product Created');
+      setProductSize([]);
+      navigate(`/admin/${storeId}/products`);
+      reset();
+    } catch (error) {
+      toast.error(errorHandler(error as IError));
+    } finally {
+      setIsLoading(false);
+    }
 
     setIsLoading(false);
   };
@@ -215,7 +172,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         <div className="flex  items-center justify-center gap-4">
           <div className="space-y-[0.7] flex-1">
             <Input
-              defaultValue={product?.stock}
+              defaultValue={product?.stock.toString()}
               size="sm"
               color={`${errors.stock?.message ? 'danger' : 'default'}`}
               label="Stock"
@@ -227,7 +184,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           </div>
           <div className="space-y-[0.7] flex-1">
             <Input
-              defaultValue={product?.price}
+              defaultValue={product?.price.toString()}
               size="sm"
               color={`${errors.price?.message ? 'danger' : 'default'}`}
               label="Price"
@@ -247,11 +204,15 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
               color={errors.colorId?.message ? 'danger' : 'default'}
               label="Select a Color"
             >
-              {color.map((color) => (
-                <SelectItem key={color.id} value={color.id}>
-                  {color.name}
-                </SelectItem>
-              ))}
+              {!color || color.length === 0 ? (
+                <SelectItem key={''}>No data yet</SelectItem>
+              ) : (
+                color.map((color) => (
+                  <SelectItem key={color.id} value={color.id}>
+                    {color.name}
+                  </SelectItem>
+                ))
+              )}
             </Select>
             <p className="text-sm text-red-500">{errors.colorId?.message}</p>
           </div>
@@ -267,11 +228,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
                 <SelectItem key={''}>No data yet</SelectItem>
               ) : (
                 category.map((category) => (
-                  <SelectItem
-                    defaultValue={product?.category.name}
-                    key={category.id}
-                    value={category.id}
-                  >
+                  <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>
                 ))
@@ -321,41 +278,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           </div>
         </div>
 
-        {/*
-  <div className="space-y-[0.7]">
-    <Select
-      label="Select a size"
-      color={errors.sizeId?.message ? 'danger' : 'default'}
-      {...register('sizeId')}
-      className="max-w-xs"
-    >
-      {size.map((size) => (
-        <SelectItem key={size.id} value={size.id}>
-          {size.name}
-        </SelectItem>
-      ))}
-    </Select>
-    <p className="text-sm text-red-500">
-      {errors.sizeId?.message}
-    </p>
-  </div>
-  <div className="space-y-[0.7]">
-    <Select
-      color={errors.colorId?.message ? 'danger' : 'default'}
-      label="Select a color"
-      {...register('colorId')}
-      className="max-w-xs"
-    >
-      {color.map((color) => (
-        <SelectItem key={color.id} value={color.id}>
-          {color.name}
-        </SelectItem>
-      ))}
-    </Select>
-    <p className="text-sm text-red-500">
-      {errors.colorId?.message}
-    </p>
-  </div> */}
         <Button
           type="submit"
           color="primary"

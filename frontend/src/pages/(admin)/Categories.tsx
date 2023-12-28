@@ -37,7 +37,7 @@ function Categories() {
               <th className="p-2 rounded-r-lg">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y">
             {isLoading ? (
               <tr className=" text-center">
                 <td></td>
@@ -60,7 +60,7 @@ function Categories() {
             ) : (
               data.map((val: IRows) => {
                 return (
-                  <tr key={val.id}>
+                  <tr className="hover:bg-default-100" key={val.id}>
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pl-4 pt-1 flex items-center justify-start gap-1">

@@ -19,13 +19,8 @@ import {
   useUpdateColorQueryHook,
 } from '../../hooks/colorReactQueryHooks';
 import { errorHandler, type IError } from '../../utils/errorHandler';
+import { colorSchema } from '../../schemas/colorSchema';
 
-const colorSchema = z.object({
-  name: z
-    .string()
-    .nonempty('Enter Name')
-    .min(3, 'Color must be above 2 characters '),
-});
 export type TData = z.infer<typeof colorSchema>;
 type Props = {
   action?: 'Edit' | '+ Add New';
