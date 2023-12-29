@@ -56,8 +56,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
 
   console.log(getValues('image'));
 
-  const { mutate: productCreateMutate } = useCreateProductQuery();
-  const { mutate: productUpdateMutate } = useUpdateProductQuery();
+  const { mutateAsync: productCreateMutateAsync } = useCreateProductQuery();
+  const { mutateAsync: productUpdateMutateAsync } = useUpdateProductQuery();
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
@@ -93,7 +93,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     try {
       setIsLoading(true);
       if (product) {
-        productUpdateMutate({
+        await productUpdateMutateAsync({
           name,
           stock,
           price,
@@ -104,7 +104,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           sizes: productSize,
         });
       } else {
-        productCreateMutate({
+        await productCreateMutateAsync({
           name,
           stock,
           price,

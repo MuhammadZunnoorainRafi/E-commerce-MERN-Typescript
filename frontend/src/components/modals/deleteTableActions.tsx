@@ -11,12 +11,13 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks/RTKHooks';
 import { useDeleteColorQueryHook } from '../../hooks/colorReactQueryHooks';
 import { useDeleteCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
+import { useDeleteProductQuery } from '../../hooks/productReactQueryHooks';
 
 function DeleteTableActions({
   type,
   id,
 }: {
-  type: 'color' | 'category';
+  type: 'color' | 'category' | 'product';
   id: string;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -28,11 +29,16 @@ function DeleteTableActions({
   const { mutate: categoryMutate, isLoading: categoryLoading } =
     useDeleteCategoryQueryHook(user!.token);
 
+  const { mutate: productMutate, isLoading: productLoading } =
+    useDeleteProductQuery();
+
   const handleDelete = async (id: string) => {
     if (type === 'color') {
       colorMutate(id);
-    } else {
+    } else if (type === 'category') {
       categoryMutate(id);
+    } else if (type === 'product') {
+      productMutate(id);
     }
   };
 
@@ -57,8 +63,8 @@ function DeleteTableActions({
                 </Button>
                 <Button
                   color="danger"
-                  isLoading={colorLoading || categoryLoading}
-                  isDisabled={colorLoading || categoryLoading}
+                  isLoading={colorLoading || categoryLoading || productLoading}
+                  isDisabled={colorLoading || categoryLoading || productLoading}
                   onClick={() => handleDelete(id)}
                 >
                   Delete

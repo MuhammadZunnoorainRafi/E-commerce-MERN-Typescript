@@ -30,12 +30,6 @@ export const useDeleteProductQuery = () => {
       await axios.delete(`/api/admin/${storeId}/product`, config);
       queryClient.invalidateQueries({ queryKey: ['product'] });
     },
-    onSuccess() {
-      toast.success('Deleted');
-    },
-    onError(error) {
-      toast.error(errorHandler(error as IError));
-    },
   });
 };
 
@@ -56,16 +50,6 @@ export const useCreateProductQuery = () => {
       );
       return res.data;
     },
-    // onSuccess() {
-    //   queryClient.invalidateQueries({ queryKey: ['product'] });
-    //   toast.success('Product Created');
-    //   setProductSize([]);
-    //   navigate(`/admin/${storeId}/products`);
-    //   reset();
-    // },
-    // onError(error) {
-    //   toast.error(errorHandler(error as IError));
-    // },
   });
 };
 

@@ -1,35 +1,14 @@
-import {
-  Button,
-  Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Spinner,
-} from '@nextui-org/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { Button, Divider, Spinner } from '@nextui-org/react';
 import moment from 'moment';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import DeleteTableActions from '../../components/modals/deleteTableActions';
+import { useGetProductQuery } from '../../hooks/productReactQueryHooks';
 import { TProduct } from '../../types/productType';
 import { storeId } from '../../utils/getStore';
-import { toast } from 'sonner';
-import { type IError, errorHandler } from '../../utils/errorHandler';
-import { useAppSelector } from '../../hooks/RTKHooks';
-import { useGetProductQuery } from '../../hooks/productReactQueryHooks';
+import { FiEdit } from 'react-icons/fi';
 
 function Products() {
-  const queryClient = useQueryClient();
-  const { user } = useAppSelector((state) => state.authReducer);
-
-  const { isLoading, data } = useGetProductQuery()
-
-  const { mutate, isLoading: delSLoading } = ;
-  const handleDelete = async (id: string) => {
-    console.log(id, 'prodID');
-    mutate(id);
-  };
+  const { isLoading, data } = useGetProductQuery();
 
   return (
     <div>
@@ -48,9 +27,7 @@ function Products() {
 
       {/* Table */}
       <div className=" p-4 shadow-lg rounded-lg border border-slate-200">
-        <table
-          className={`w-full ${delSLoading ? 'cursor-wait' : 'cursor-default'}`}
-        >
+        <table className="w-full">
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
               <th className="p-2 rounded-l-lg">Name</th>
@@ -100,41 +77,16 @@ function Products() {
                     <td className="p-1">{val.category.name}</td>
                     <td className="p-1">{val.color.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
-                    <td className=" pt-1">
-                      <div className="relative flex ml-5 justify-start items-center gap-2">
-                        {delSLoading ? (
-                          <Spinner color="danger" />
-                        ) : (
-                          <Dropdown className="bg-background border-1 border-default-200">
-                            <DropdownTrigger>
-                              <Button
-                                isIconOnly
-                                radius="full"
-                                size="sm"
-                                variant="light"
-                              >
-                                <HiOutlineDotsVertical size={22} />
-                              </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu variant="flat">
-                              <DropdownItem>
-                                <Link
-                                  className="block"
-                                  to={`/admin/${storeId}/products/${val.slug}/edit`}
-                                >
-                                  Edit
-                                </Link>
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleDelete(val.id)}
-                                color="danger"
-                              >
-                                {delSLoading ? 'Deleting...' : 'Delete'}
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        )}
-                      </div>
+                    <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
+                      <button>
+                        <DeleteTableActions id={val.id} type="product" />
+                      </button>
+                      <Link
+                        className="hover:text-cyan-600"
+                        to={`/admin/${storeId}/products/${val.slug}/edit`}
+                      >
+                        <FiEdit />
+                      </Link>
                     </td>
                   </tr>
                 );
