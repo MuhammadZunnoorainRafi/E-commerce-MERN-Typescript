@@ -44,7 +44,8 @@ export const createProductController = asyncHandler(
         slug: genSlug(name),
         images: {
           createMany: {
-            data: [...image.map((val: { url: string }) => val)],
+            // data: [...image.map((val: { url: string }) => val)],
+            data: image,
           },
         },
         size: {
@@ -67,36 +68,132 @@ export const createProductController = asyncHandler(
   }
 );
 
-export const updateProductController = asyncHandler(
-  async (req: IRequest, res: Response) => {
+export const updateProductController =
+  // asyncHandler(
+  //   async (req: IRequest, res: Response) => {
+  //     if (!req.admin) {
+  //       res.status(401);
+  //       throw new Error('Only Admin is Authorized for this route');
+  //     }
+
+  //     const {
+  //       name,
+  //       image,
+  //       categoryId,
+  //       sizes,
+  //       price,
+  //       colorId,
+  //       description,
+  //       stock,
+  //     } = req.body;
+
+  //     if (
+  //       !name ||
+  //       !sizes ||
+  //       !description ||
+  //       !price ||
+  //       !image ||
+  //       !categoryId ||
+  //       !colorId ||
+  //       !stock
+  //     ) {
+  //       res.status(400).json({ error: 'fill all fields' });
+  //     }
+
+  //     const updatedProduct = await prismaDB.product.create({
+  //       // where: {
+  //       //   id: req.body.id,
+  //       // },
+  //       data: {
+  //         name,
+  //         storeId: req.params.id,
+  //         slug: genSlug(name),
+  //         images: {
+  //           createMany: {
+  //             // data: [...image.map((val: { url: string }) => val)],
+  //             data: image,
+  //           },
+  //         },
+  //         size: {
+  //           createMany: {
+  //             data: sizes,
+  //           },
+  //         },
+  //         stock,
+  //         categoryId,
+  //         price,
+  //         description,
+  //         colorId,
+  //       },
+  //     });
+
+  //     if (updatedProduct) {
+  //       res.status(200).send('Product is updated');
+  //     } else {
+  //       res.status(400);
+  //       throw new Error('Product is not updated');
+  //     }
+  //   }
+  // );
+  asyncHandler(async (req: IRequest, res: Response) => {
     if (!req.admin) {
       res.status(401);
       throw new Error('Only Admin is Authorized for this route');
     }
-    const validation = productPatchSchema.safeParse(req.body);
-    if (!validation.success) {
-      res.status(400);
-      res.json(fromZodError(validation.error));
-      return;
+
+    const {
+      name,
+      image,
+      categoryId,
+      sizes,
+      price,
+      colorId,
+      description,
+      stock,
+    } = req.body;
+
+    if (
+      !name ||
+      !sizes ||
+      !description ||
+      !price ||
+      !image ||
+      !categoryId ||
+      !colorId ||
+      !stock
+    ) {
+      res.status(400).json({ error: 'fill all fields' });
     }
 
-    const updatedProduct = await prismaDB.product.update({
+    const newProduct = await prismaDB.product.create({
       data: {
-        ...req.body,
-      },
-      where: {
-        id: req.body.id,
+        name,
+        storeId: req.params.id,
+        slug: genSlug(name),
+        images: {
+          createMany: {
+            // data: [...image.map((val: { url: string }) => val)],
+            data: image,
+          },
+        },
+        size: {
+          createMany: {
+            data: [...sizes.map((val: { label: string }) => val)],
+          },
+        },
+        stock,
+        categoryId,
+        price,
+        description,
+        colorId,
       },
     });
-
-    if (updatedProduct) {
-      res.status(200).send('Product is updated');
+    if (newProduct) {
+      res.status(200).json(newProduct);
     } else {
-      res.status(400);
-      throw new Error('Product is not updated');
+      throw new Error('NO product created');
     }
-  }
-);
+  });
 
 export const getProductController = asyncHandler(
   async (req: Request, res: Response) => {

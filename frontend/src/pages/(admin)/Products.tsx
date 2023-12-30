@@ -37,7 +37,7 @@ function Products() {
               <th className="p-2 rounded-r-lg">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y">
             {isLoading ? (
               <tr className=" text-center">
                 <td></td>
@@ -63,7 +63,7 @@ function Products() {
             ) : (
               data.map((val: TProduct) => {
                 return (
-                  <tr key={val.id}>
+                  <tr key={val.id} className="hover:bg-default-100">
                     <td className="p-1 flex gap-2 items-center">
                       <div>
                         <img
@@ -77,16 +77,16 @@ function Products() {
                     <td className="p-1">{val.category.name}</td>
                     <td className="p-1">{val.color.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
-                    <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
-                      <button>
+                    <td className="pl-4 pt-1 ">
+                      <div className="flex items-center justify-start gap-1">
                         <DeleteTableActions id={val.id} type="product" />
-                      </button>
-                      <Link
-                        className="hover:text-cyan-600"
-                        to={`/admin/${storeId}/products/${val.slug}/edit`}
-                      >
-                        <FiEdit />
-                      </Link>
+                        <Link
+                          className="hover:text-cyan-600"
+                          to={`/admin/${storeId}/products/${val.slug}/edit`}
+                        >
+                          <FiEdit />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

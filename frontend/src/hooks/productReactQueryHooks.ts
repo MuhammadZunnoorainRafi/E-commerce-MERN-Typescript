@@ -56,13 +56,13 @@ export const useCreateProductQuery = () => {
 export const useUpdateProductQuery = () => {
   const { user } = useAppSelector((store) => store.authReducer);
   return useMutation({
-    mutationFn: async (data: ProductTData) => {
+    mutationFn: async (data: ProductTData & { id: string }) => {
       const config = {
         headers: {
           Authorization: `Bearer ${user!.token}`,
         },
       };
-      const res = await axios.patch(
+      const res = await axios.put(
         `/api/admin/${storeId}/product`,
         data,
         config

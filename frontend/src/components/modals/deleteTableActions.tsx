@@ -20,13 +20,13 @@ function DeleteTableActions({
   type: 'color' | 'category' | 'product';
   id: string;
 }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { user } = useAppSelector((state) => state.authReducer);
 
-  const { mutate: colorMutate, isLoading: colorLoading } =
+  const { mutateAsync: colorMutate, isLoading: colorLoading } =
     useDeleteColorQueryHook(user!.token);
 
-  const { mutate: categoryMutate, isLoading: categoryLoading } =
+  const { mutateAsync: categoryMutate, isLoading: categoryLoading } =
     useDeleteCategoryQueryHook(user!.token);
 
   const { mutate: productMutate, isLoading: productLoading } =
@@ -34,9 +34,11 @@ function DeleteTableActions({
 
   const handleDelete = async (id: string) => {
     if (type === 'color') {
-      colorMutate(id);
+      await colorMutate(id);
+      onClose();
     } else if (type === 'category') {
-      categoryMutate(id);
+      await categoryMutate(id);
+      onClose();
     } else if (type === 'product') {
       productMutate(id);
     }

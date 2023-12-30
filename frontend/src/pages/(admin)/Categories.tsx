@@ -64,9 +64,7 @@ function Categories() {
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
-                      <button>
-                        <DeleteTableActions id={val.id} type="category" />
-                      </button>
+                      <DeleteTableActions id={val.id} type="category" />
                       <CreateCategoryButtonModal
                         action="Edit"
                         categoryData={val}

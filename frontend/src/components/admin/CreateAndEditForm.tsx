@@ -94,6 +94,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       setIsLoading(true);
       if (product) {
         await productUpdateMutateAsync({
+          id: product.id,
           name,
           stock,
           price,
@@ -136,11 +137,18 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         onSubmit={handleSubmit(formSubmit)}
       >
         <div className="space-y-[0.7]">
-          <Input
+          {/* <Input
             color={errors.image?.message ? 'danger' : 'default'}
             multiple={true}
             size="md"
             label="Image"
+            placeholder="Enter your Image"
+            {...register('image')}
+            type="file"
+            accept="image/*"
+          /> */}
+          <input
+            multiple={true}
             placeholder="Enter your Image"
             {...register('image')}
             type="file"

@@ -61,9 +61,7 @@ function Colors() {
                     <td className="p-1">{val.name}</td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
-                      <button>
-                        <DeleteTableActions id={val.id} type="color" />
-                      </button>
+                      <DeleteTableActions id={val.id} type="color" />
                       <CreateColorButtonModal action="Edit" colorData={val} />
                     </td>
                   </tr>
