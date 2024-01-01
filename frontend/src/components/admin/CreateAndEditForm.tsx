@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
 import { useForm } from 'react-hook-form';
 import { storeId } from '../../utils/getStore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { type IError, errorHandler } from '../../utils/errorHandler';
 import { toast } from 'sonner';
 import { ProductTData, TProduct } from '../../types/productType';
@@ -42,7 +42,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     register,
     formState: { errors },
     handleSubmit,
-    getValues,
     reset,
   } = useForm<ProductTData>({
     defaultValues: {
@@ -53,8 +52,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     },
     resolver: zodResolver(productSchema),
   });
-
-  console.log(getValues('image'));
 
   const { mutateAsync: productCreateMutateAsync } = useCreateProductQuery();
   const { mutateAsync: productUpdateMutateAsync } = useUpdateProductQuery();

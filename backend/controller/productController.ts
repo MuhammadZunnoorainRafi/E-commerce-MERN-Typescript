@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import prismaDB from '../config/prismaDB';
-import { productPatchSchema } from '../utils/schemas';
+import { productSchema } from '../utils/schemas';
 import { fromZodError } from 'zod-validation-error';
 import { IRequest } from '../middlewares/authMiddleware';
 import { genSlug } from '../utils/genSlug';
@@ -13,6 +13,12 @@ export const createProductController = asyncHandler(
       throw new Error('Only Admin is Authorized for this route');
     }
 
+    const validation = productSchema.safeParse(req.body);
+    if (!validation.success) {
+      res.status(400).json(fromZodError(validation.error));
+      return;
+    }
+
     const {
       name,
       image,
@@ -22,20 +28,7 @@ export const createProductController = asyncHandler(
       colorId,
       description,
       stock,
-    } = req.body;
-
-    if (
-      !name ||
-      !sizes ||
-      !description ||
-      !price ||
-      !image ||
-      !categoryId ||
-      !colorId ||
-      !stock
-    ) {
-      res.status(400).json({ error: 'fill all fields' });
-    }
+    } = validation.data;
 
     const newProduct = await prismaDB.product.create({
       data: {
@@ -75,6 +68,12 @@ export const updateProductController = asyncHandler(
       throw new Error('Only Admin is Authorized for this route');
     }
 
+    const validation = productSchema.safeParse(req.body);
+    if (!validation.success) {
+      res.status(400).json(fromZodError(validation.error));
+      return;
+    }
+
     const {
       name,
       image,
@@ -84,20 +83,7 @@ export const updateProductController = asyncHandler(
       colorId,
       description,
       stock,
-    } = req.body;
-
-    if (
-      !name ||
-      !sizes ||
-      !description ||
-      !price ||
-      !image ||
-      !categoryId ||
-      !colorId ||
-      !stock
-    ) {
-      res.status(400).json({ error: 'fill all fields' });
-    }
+    } = validation.data;
 
     await prismaDB.product.update({
       where: {
@@ -106,7 +92,7 @@ export const updateProductController = asyncHandler(
       data: {
         name,
         storeId: req.params.id,
-        slug: genSlug(name),
+        slug: genSlug(name!),
         images: {
           deleteMany: {},
         },
