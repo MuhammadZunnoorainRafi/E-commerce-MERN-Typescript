@@ -1,4 +1,4 @@
-import { Button, Divider, Spinner } from '@nextui-org/react';
+import { Button, Divider, Image, Spinner } from '@nextui-org/react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import DeleteTableActions from '../../components/modals/deleteTableActions';
@@ -66,7 +66,7 @@ function Products() {
                   <tr key={val.id} className="hover:bg-default-100">
                     <td className="p-1 flex gap-2 items-center">
                       <div>
-                        <img
+                        <Image
                           className="h-10 w-10 rounded-md object-cover"
                           src={val.images[0].url}
                           alt="image error"

@@ -11,7 +11,7 @@ import { ProductTData, TProduct } from '../../types/productType';
 import { useNavigate } from 'react-router-dom';
 import { useGetCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
 import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
-import { productSchema } from '../../schemas/productSchema';
+import { productEditSchema, productSchema } from '../../schemas/productSchema';
 import {
   useCreateProductQuery,
   useUpdateProductQuery,
@@ -38,6 +38,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     label: '',
   });
 
+  const existingImg = product!.images.map((val) => ({ url: val.url }));
+
   const {
     register,
     formState: { errors },
@@ -48,9 +50,9 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       colorId: product?.colorId,
       categoryId: product?.categoryId,
       sizes: product?.size.map((val) => ({ label: val.label })),
-      image: product?.images.map((val) => ({ url: val.url })),
+      image: existingImg || [],
     },
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(product ? productEditSchema : productSchema),
   });
 
   const { mutateAsync: productCreateMutateAsync } = useCreateProductQuery();
@@ -80,10 +82,12 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     categoryId,
   }: ProductTData) => {
     setIsLoading(true);
-    const arr = [];
-    for (let i = 0; i < image.length; i++) {
-      const multipleImages = await uploadImageCloudinary(image[i]);
-      arr.push(multipleImages);
+    const arr = existingImg || [];
+    if (!existingImg && arr.length === 0) {
+      for (let i = 0; i < image.length; i++) {
+        const multipleImages = await uploadImageCloudinary(image[i]);
+        arr.push(multipleImages);
+      }
     }
     console.log(image, 'imageAWEWQE');
 
