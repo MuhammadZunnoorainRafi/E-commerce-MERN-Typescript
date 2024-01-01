@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
 import { useForm } from 'react-hook-form';
 import { storeId } from '../../utils/getStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type IError, errorHandler } from '../../utils/errorHandler';
 import { toast } from 'sonner';
 import { ProductTData, TProduct } from '../../types/productType';
@@ -31,7 +31,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [productSize, setProductSize] = useState<TProductSize | []>(
-    product?.size ? product.size : []
+    product?.size ? product.size.map((val) => ({ label: val.label })) : []
   );
 
   const [sizeField, setSizeField] = useState({
@@ -46,10 +46,10 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     reset,
   } = useForm<ProductTData>({
     defaultValues: {
-      sizes: product
-        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (product.size[product.size.length - 1].label as any)
-        : '',
+      colorId: product?.colorId,
+      categoryId: product?.categoryId,
+      sizes: product?.size.map((val) => ({ label: val.label })),
+      image: product?.images.map((val) => ({ url: val.url })),
     },
     resolver: zodResolver(productSchema),
   });
@@ -208,7 +208,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
             <Select
               {...register('colorId')}
               size="sm"
-              defaultSelectedKeys={product ? [product?.colorId] : []}
+              defaultSelectedKeys={product ? [product.colorId] : []}
               color={errors.colorId?.message ? 'danger' : 'default'}
               label="Select a Color"
             >

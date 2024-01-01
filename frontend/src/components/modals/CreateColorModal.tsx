@@ -40,6 +40,9 @@ export default function CreateColorButtonModal({
     handleSubmit,
     reset,
   } = useForm<TData>({
+    defaultValues: {
+      name: '',
+    },
     resolver: zodResolver(colorSchema),
   });
 
@@ -55,7 +58,7 @@ export default function CreateColorButtonModal({
         await mutateAsync(data);
       }
       queryClient.invalidateQueries({ queryKey: ['color'] });
-      reset();
+      reset({ name: '' });
       onClose();
     } catch (error) {
       toast.error(errorHandler(error as IError));

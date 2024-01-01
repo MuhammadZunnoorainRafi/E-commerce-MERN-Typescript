@@ -40,6 +40,9 @@ export default function CreateCategoryButtonModal({
     handleSubmit,
     reset,
   } = useForm<TData>({
+    defaultValues: {
+      name: '',
+    },
     resolver: zodResolver(categorySchema),
   });
 
@@ -55,7 +58,7 @@ export default function CreateCategoryButtonModal({
         await mutateAsync(data);
       }
       queryClient.invalidateQueries({ queryKey: ['category'] });
-      reset();
+      reset({ name: '' });
       onClose();
     } catch (error) {
       toast.error(errorHandler(error as IError));

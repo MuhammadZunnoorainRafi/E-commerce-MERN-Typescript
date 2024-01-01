@@ -55,7 +55,6 @@ export const updateCategoryController = asyncHandler(
       },
       data: {
         name,
-        storeId: id,
       },
     });
 

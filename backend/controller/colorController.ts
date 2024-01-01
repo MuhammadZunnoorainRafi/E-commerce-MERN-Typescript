@@ -55,7 +55,6 @@ export const updateColorController = asyncHandler(
       },
       data: {
         name,
-        storeId: id,
       },
     });
 
