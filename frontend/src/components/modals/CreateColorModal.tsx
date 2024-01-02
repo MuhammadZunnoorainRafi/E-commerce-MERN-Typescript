@@ -8,6 +8,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
+import { SketchPicker } from 'react-color';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { FiEdit } from 'react-icons/fi';
@@ -20,6 +21,7 @@ import {
 } from '../../hooks/colorReactQueryHooks';
 import { errorHandler, type IError } from '../../utils/errorHandler';
 import { colorSchema } from '../../schemas/colorSchema';
+import { useState } from 'react';
 
 export type TData = z.infer<typeof colorSchema>;
 type Props = {
@@ -33,6 +35,11 @@ export default function CreateColorButtonModal({
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
+  const [currentColor, setCurrentColor] = useState('#fff');
+
+  const handleChange = (color: { hex: string }) => {
+    setCurrentColor(color.hex);
+  };
 
   const {
     register,
@@ -89,14 +96,26 @@ export default function CreateColorButtonModal({
               <ModalBody className="pb-3">
                 <form onSubmit={handleSubmit(formSubmit)}>
                   <div className="py-2 space-y-1">
-                    <Input
-                      defaultValue={colorData?.name}
-                      size="sm"
-                      color={`${errors.name?.message ? 'danger' : 'default'}`}
-                      label="Name"
-                      {...register('name')}
-                    />
-                    <p className="text-sm text-red-500">
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="flex-1 space-y-2">
+                        <Input
+                          defaultValue={colorData?.name}
+                          size="sm"
+                          color={`${
+                            errors.name?.message ? 'danger' : 'default'
+                          }`}
+                          label="Name"
+                          {...register('name')}
+                        />
+                       
+                      </div>
+                      <SketchPicker
+                        className="flex-1"
+                        color={currentColor}
+                        onChangeComplete={handleChange}
+                      />
+                    </div>
+                    <p className="text-sm  text-red-500">
                       {errors.name?.message}
                     </p>
                   </div>

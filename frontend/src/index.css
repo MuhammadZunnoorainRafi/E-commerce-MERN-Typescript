@@ -18,3 +18,12 @@ input[type='file']::file-selector-button:hover {
   background-color: #b4b7b7;
   border: 2px solid #9b9b9b;
 }
+
+#file-input {
+  color: transparent;
+}
+
+#file-input::after {
+  content: 'Select an image file';
+  color: black;
+}

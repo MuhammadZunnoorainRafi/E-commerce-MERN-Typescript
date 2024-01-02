@@ -7,7 +7,6 @@ import { Spinner } from '@nextui-org/react';
 
 function EditProduct() {
   const params = useParams();
-
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['Product', params.slug],

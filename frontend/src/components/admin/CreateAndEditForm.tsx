@@ -1,4 +1,4 @@
-import { Button, Input, Select, SelectItem } from '@nextui-org/react';
+import { Button, Image, Input, Select, SelectItem } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import { useGetCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
 import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
 import { productEditSchema, productSchema } from '../../schemas/productSchema';
+import { MdDelete } from 'react-icons/md';
+
 import {
   useCreateProductQuery,
   useUpdateProductQuery,
@@ -27,8 +29,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const queryClient = useQueryClient();
   const { data: category } = useGetCategoryQueryHook();
   const { data: color } = useGetColorQueryHook();
-
-  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [productSize, setProductSize] = useState<TProductSize | []>(
     product?.size ? product.size.map((val) => ({ label: val.label })) : []
@@ -39,13 +39,13 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   });
 
   const existingImg = product?.images?.map((val) => ({ url: val.url }));
-
+  const [allImages, setAllImages] = useState(existingImg || []);
+  console.log(allImages);
   const {
     register,
     formState: { errors },
     handleSubmit,
     reset,
-    getValues,
   } = useForm<ProductTData>({
     defaultValues: {
       colorId: product?.colorId,
@@ -56,14 +56,15 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     resolver: zodResolver(product ? productEditSchema : productSchema),
   });
 
-  const {
-    mutateAsync: productCreateMutateAsync,
-    isLoading: prodCreateIsLoading,
-  } = useCreateProductQuery();
-  const {
-    mutateAsync: productUpdateMutateAsync,
-    isLoading: prodUpdateIsLoading,
-  } = useUpdateProductQuery();
+  const { mutateAsync: productCreateMutateAsync, status: prodCreateStatus } =
+    useCreateProductQuery();
+  const { mutateAsync: productUpdateMutateAsync, status: prodUpdateStatus } =
+    useUpdateProductQuery();
+
+  const productCreateStatus =
+    prodCreateStatus !== 'error' && prodCreateStatus !== 'idle';
+  const productUpdateStatus =
+    prodUpdateStatus !== 'error' && prodUpdateStatus !== 'idle';
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
@@ -79,6 +80,18 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     setProductSize(productSize.filter((val) => val.label !== label));
   };
 
+  const inputImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const image = e.target.files;
+    // if (!existingImg || ( existingImg && image.length > 0 && !image[0].url)) {
+    if (image) {
+      for (let i = 0; i < image.length; i++) {
+        const multipleImages = await uploadImageCloudinary(image[i]);
+        setAllImages((prev) => [...prev, multipleImages]);
+      }
+    }
+    // }
+  };
+
   const formSubmit = async ({
     name,
     price,
@@ -88,20 +101,19 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     stock,
     categoryId,
   }: ProductTData) => {
-    const arr = existingImg || [];
+    // const arr = existingImg || [];
     if (image.length > 3) {
       toast.error('Maximum image chosen limit is 3');
       return;
     }
-    if (!existingImg || (existingImg && image.length > 0 && !image[0].url)) {
-      setIsLoading(true);
-      for (let i = 0; i < image.length; i++) {
-        const multipleImages = await uploadImageCloudinary(image[i]);
-        arr.push(multipleImages);
-        setIsLoading(false);
-      }
-    }
-    console.log(image, 'imageAWEWQE');
+    // if (!existingImg || (existingImg && image.length > 0 && !image[0].url)) {
+    //   setIsLoading(true);
+    //   for (let i = 0; i < image.length; i++) {
+    //     const multipleImages = await uploadImageCloudinary(image[i]);
+    //     arr.push(multipleImages);
+    //     setIsLoading(false);
+    //   }
+    // }
 
     try {
       if (product) {
@@ -112,10 +124,11 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           price,
           colorId,
           description,
-          image: arr,
+          image: allImages,
           categoryId,
           sizes: productSize,
         });
+        toast.success('Product Updated');
       } else {
         await productCreateMutateAsync({
           name,
@@ -123,36 +136,62 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           price,
           colorId,
           description,
-          image: arr,
+          image: allImages,
           categoryId,
           sizes: productSize,
         });
+        toast.success('Product Created');
       }
       queryClient.invalidateQueries({ queryKey: ['product'] });
-      toast.success('Product Created');
       setProductSize([]);
-      navigate(`/admin/${storeId}/products`);
+      if (!productCreateStatus || !productUpdateStatus) {
+        navigate(`/admin/${storeId}/products`);
+      }
       reset();
     } catch (error) {
       toast.error(errorHandler(error as IError));
     }
   };
 
-  console.log(getValues('image'));
   return (
     <div>
       <form
         className="space-y-4 max-w-xl mx-auto"
         onSubmit={handleSubmit(formSubmit)}
       >
+        <div className="flex items-center justify-center gap-2">
+          {allImages.length > 0 &&
+            allImages.map((val, ind) => {
+              return (
+                <div
+                  key={ind}
+                  className="group relative   overflow-hidden rounded-md"
+                >
+                  <Image className=" object-cover h-44 w-32" src={val.url} />
+                  <div className="px-1 m-1 rounded-md text-red-600 absolute z-10 top-0 right-0 bg-white hover:bg-slate-200  border-2 border-slate-300 duration-150 cursor-pointer hover:border-slate-500 hidden group-hover:block">
+                    <button
+                      onClick={() =>
+                        setAllImages(
+                          allImages.filter((item) => item.url !== val.url)
+                        )
+                      }
+                    >
+                      <MdDelete />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
         <div className="space-y-[0.7]">
           <input
+            id="file-input"
             multiple={true}
             placeholder="Enter your Image"
             {...register('image')}
             type="file"
             accept="image/*"
-            onChange={(e) => console.log(e)}
+            onChange={inputImageUpload}
           />
 
           <p className="text-red-500 text-sm">{errors.image?.message}</p>
@@ -289,8 +328,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         <Button
           type="submit"
           color="primary"
-          isLoading={isLoading || prodCreateIsLoading || prodUpdateIsLoading}
-          isDisabled={isLoading || prodCreateIsLoading || prodUpdateIsLoading}
+          isLoading={productCreateStatus || productUpdateStatus}
+          isDisabled={productCreateStatus || productUpdateStatus}
         >
           {product ? 'Update' : 'Create'}
         </Button>
