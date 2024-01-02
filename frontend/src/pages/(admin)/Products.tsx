@@ -1,6 +1,6 @@
 import { Button, Divider, Image, Spinner } from '@nextui-org/react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DeleteTableActions from '../../components/modals/deleteTableActions';
 import { useGetProductQuery } from '../../hooks/productReactQueryHooks';
 import { TProduct } from '../../types/productType';
@@ -9,7 +9,7 @@ import { FiEdit } from 'react-icons/fi';
 
 function Products() {
   const { isLoading, data } = useGetProductQuery();
-
+  const navigate = useNavigate();
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -19,9 +19,12 @@ function Products() {
             Manage products for your store
           </p>
         </div>
-        <Link to={`/admin/${storeId}/products/create`}>
-          <Button color="primary">+ Add New</Button>
-        </Link>
+        <Button
+          onClick={() => navigate(`/admin/${storeId}/products/create`)}
+          color="primary"
+        >
+          + Add New
+        </Button>
       </div>
       <Divider className="my-5" />
 

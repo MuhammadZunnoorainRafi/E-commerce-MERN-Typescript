@@ -38,13 +38,14 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     label: '',
   });
 
-  const existingImg = product!.images.map((val) => ({ url: val.url }));
+  const existingImg = product?.images?.map((val) => ({ url: val.url }));
 
   const {
     register,
     formState: { errors },
     handleSubmit,
     reset,
+    getValues,
   } = useForm<ProductTData>({
     defaultValues: {
       colorId: product?.colorId,
@@ -55,8 +56,14 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     resolver: zodResolver(product ? productEditSchema : productSchema),
   });
 
-  const { mutateAsync: productCreateMutateAsync } = useCreateProductQuery();
-  const { mutateAsync: productUpdateMutateAsync } = useUpdateProductQuery();
+  const {
+    mutateAsync: productCreateMutateAsync,
+    isLoading: prodCreateIsLoading,
+  } = useCreateProductQuery();
+  const {
+    mutateAsync: productUpdateMutateAsync,
+    isLoading: prodUpdateIsLoading,
+  } = useUpdateProductQuery();
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
@@ -81,18 +88,22 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     stock,
     categoryId,
   }: ProductTData) => {
-    setIsLoading(true);
     const arr = existingImg || [];
-    if (!existingImg && arr.length === 0) {
+    if (image.length > 3) {
+      toast.error('Maximum image chosen limit is 3');
+      return;
+    }
+    if (!existingImg || (existingImg && image.length > 0 && !image[0].url)) {
+      setIsLoading(true);
       for (let i = 0; i < image.length; i++) {
         const multipleImages = await uploadImageCloudinary(image[i]);
         arr.push(multipleImages);
+        setIsLoading(false);
       }
     }
     console.log(image, 'imageAWEWQE');
 
     try {
-      setIsLoading(true);
       if (product) {
         await productUpdateMutateAsync({
           id: product.id,
@@ -124,13 +135,10 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       reset();
     } catch (error) {
       toast.error(errorHandler(error as IError));
-    } finally {
-      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
+  console.log(getValues('image'));
   return (
     <div>
       <form
@@ -138,22 +146,13 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         onSubmit={handleSubmit(formSubmit)}
       >
         <div className="space-y-[0.7]">
-          {/* <Input
-            color={errors.image?.message ? 'danger' : 'default'}
-            multiple={true}
-            size="md"
-            label="Image"
-            placeholder="Enter your Image"
-            {...register('image')}
-            type="file"
-            accept="image/*"
-          /> */}
           <input
             multiple={true}
             placeholder="Enter your Image"
             {...register('image')}
             type="file"
             accept="image/*"
+            onChange={(e) => console.log(e)}
           />
 
           <p className="text-red-500 text-sm">{errors.image?.message}</p>
@@ -290,10 +289,10 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         <Button
           type="submit"
           color="primary"
-          isLoading={isLoading}
-          isDisabled={isLoading}
+          isLoading={isLoading || prodCreateIsLoading || prodUpdateIsLoading}
+          isDisabled={isLoading || prodCreateIsLoading || prodUpdateIsLoading}
         >
-          Create
+          {product ? 'Update' : 'Create'}
         </Button>
       </form>
     </div>

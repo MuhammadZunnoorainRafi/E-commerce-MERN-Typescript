@@ -23,14 +23,17 @@ function DeleteTableActions({
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { user } = useAppSelector((state) => state.authReducer);
 
-  const { mutateAsync: colorMutate, isLoading: colorLoading } =
+  const { mutateAsync: colorMutate, status: colStatus } =
     useDeleteColorQueryHook(user!.token);
 
-  const { mutateAsync: categoryMutate, isLoading: categoryLoading } =
+  const { mutateAsync: categoryMutate, status: catStatus } =
     useDeleteCategoryQueryHook(user!.token);
 
-  const { mutate: productMutate, isLoading: productLoading } =
-    useDeleteProductQuery();
+  const { mutate: productMutate, status: prodStatus } = useDeleteProductQuery();
+
+  const productStatus = prodStatus !== 'idle' && prodStatus !== 'error';
+  const colorStatus = colStatus !== 'idle' && colStatus !== 'error';
+  const categoryStatus = catStatus !== 'idle' && catStatus !== 'error';
 
   const handleDelete = async (id: string) => {
     if (type === 'color') {
@@ -65,8 +68,8 @@ function DeleteTableActions({
                 </Button>
                 <Button
                   color="danger"
-                  isLoading={colorLoading || categoryLoading || productLoading}
-                  isDisabled={colorLoading || categoryLoading || productLoading}
+                  isLoading={productStatus || categoryStatus || colorStatus}
+                  isDisabled={productStatus || categoryStatus || colorStatus}
                   onClick={() => handleDelete(id)}
                 >
                   Delete

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import CreateAndEditForm from '../../components/admin/CreateAndEditForm';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { storeId } from '../../utils/getStore';
 import { Spinner } from '@nextui-org/react';
@@ -8,12 +8,14 @@ import { Spinner } from '@nextui-org/react';
 function EditProduct() {
   const params = useParams();
 
+  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['Product', params.slug],
     queryFn: async () => {
       const res = await axios.get(
         `/api/admin/${storeId}/product/${params.slug}`
       );
+      queryClient.invalidateQueries({ queryKey: ['Product', params.slug] });
       return res.data;
     },
   });
