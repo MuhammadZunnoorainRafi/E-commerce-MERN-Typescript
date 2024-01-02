@@ -26,7 +26,7 @@ import { useState } from 'react';
 export type TData = z.infer<typeof colorSchema>;
 type Props = {
   action?: 'Edit' | '+ Add New';
-  colorData?: { name: string; id: string };
+  colorData?: { name: string; id: string; hexCode: string };
 };
 export default function CreateColorButtonModal({
   action = '+ Add New',
@@ -35,7 +35,7 @@ export default function CreateColorButtonModal({
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
-  const [currentColor, setCurrentColor] = useState('#fff');
+  const [currentColor, setCurrentColor] = useState('#C66666');
 
   const handleChange = (color: { hex: string }) => {
     setCurrentColor(color.hex);
@@ -49,6 +49,7 @@ export default function CreateColorButtonModal({
   } = useForm<TData>({
     defaultValues: {
       name: '',
+      hexCode: '',
     },
     resolver: zodResolver(colorSchema),
   });
@@ -56,16 +57,20 @@ export default function CreateColorButtonModal({
   const { mutateAsync, isLoading } = usePostColorQueryHook(user!.token);
   const { mutateAsync: editMutateAsync, isLoading: editIsLoading } =
     useUpdateColorQueryHook(user!.token);
-
+  console.log(currentColor);
   const formSubmit = async (data: TData) => {
     try {
       if (colorData) {
-        await editMutateAsync({ name: data.name, colorId: colorData.id });
+        await editMutateAsync({
+          name: data.name,
+          colorId: colorData.id,
+          hexCode: data.hexCode,
+        });
       } else {
         await mutateAsync(data);
       }
       queryClient.invalidateQueries({ queryKey: ['color'] });
-      reset({ name: '' });
+      reset({ name: '', hexCode: '' });
       onClose();
     } catch (error) {
       toast.error(errorHandler(error as IError));
@@ -97,7 +102,7 @@ export default function CreateColorButtonModal({
                 <form onSubmit={handleSubmit(formSubmit)}>
                   <div className="py-2 space-y-1">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="flex-1 space-y-2">
+                      <div className="flex-1 space-y-1">
                         <Input
                           defaultValue={colorData?.name}
                           size="sm"
@@ -107,7 +112,22 @@ export default function CreateColorButtonModal({
                           label="Name"
                           {...register('name')}
                         />
-                       
+                        <p className="text-sm  text-red-500">
+                          {errors.name?.message}
+                        </p>
+                        <Input
+                          defaultValue={colorData?.hexCode}
+                          value={colorData ? colorData.hexCode : currentColor}
+                          size="sm"
+                          color={`${
+                            errors.hexCode?.message ? 'danger' : 'default'
+                          }`}
+                          label="Name"
+                          {...register('hexCode')}
+                        />
+                        <p className="text-sm  text-red-500">
+                          {errors.hexCode?.message}
+                        </p>
                       </div>
                       <SketchPicker
                         className="flex-1"
@@ -115,9 +135,6 @@ export default function CreateColorButtonModal({
                         onChangeComplete={handleChange}
                       />
                     </div>
-                    <p className="text-sm  text-red-500">
-                      {errors.name?.message}
-                    </p>
                   </div>
                   <Button
                     type="submit"

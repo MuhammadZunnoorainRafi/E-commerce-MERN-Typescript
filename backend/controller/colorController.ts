@@ -9,7 +9,7 @@ export const createColorController = asyncHandler(
       res.status(401);
       throw new Error('Only Admin is Authorized for this route');
     }
-    const { name } = req.body;
+    const { name, hexCode } = req.body;
     const { id } = req.params;
 
     if (!name || !id) {
@@ -20,6 +20,7 @@ export const createColorController = asyncHandler(
 
     const color = await prismaDB.color.create({
       data: {
+        hexCode,
         name,
         storeId: id,
       },
@@ -40,7 +41,7 @@ export const updateColorController = asyncHandler(
       res.status(401);
       throw new Error('Only Admin is Authorized for this route');
     }
-    const { name, colorId } = req.body;
+    const { name, colorId, hexCode } = req.body;
     const { id } = req.params;
 
     if (!name || !id || !colorId) {
@@ -55,6 +56,7 @@ export const updateColorController = asyncHandler(
       },
       data: {
         name,
+        hexCode,
       },
     });
 

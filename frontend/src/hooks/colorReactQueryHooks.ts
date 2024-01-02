@@ -47,7 +47,11 @@ export const usePostColorQueryHook = (token: string) => {
 };
 export const useUpdateColorQueryHook = (token: string) => {
   return useMutation({
-    mutationFn: async (data: { name: string; colorId: string }) => {
+    mutationFn: async (data: {
+      name: string;
+      colorId: string;
+      hexCode: string;
+    }) => {
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -7,6 +7,7 @@ import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
 interface IRows {
   id: string;
   name: string;
+  hexCode: string;
   createdAt: string;
 }
 
@@ -30,6 +31,7 @@ function Colors() {
           <thead>
             <tr className="text-left bg-slate-100 text-slate-700 ">
               <th className="p-2 rounded-l-lg">Name</th>
+              <th className="p-2">Hex Code</th>
               <th className="p-2">Date</th>
               <th className="p-2 rounded-r-lg">Action</th>
             </tr>
@@ -37,6 +39,7 @@ function Colors() {
           <tbody className="divide-y ">
             {isLoading ? (
               <tr className=" text-center">
+                <td></td>
                 <td></td>
                 <td className="py-5">
                   <Spinner />
@@ -59,6 +62,15 @@ function Colors() {
                 return (
                   <tr key={val.id} className="hover:bg-default-100">
                     <td className="p-1">{val.name}</td>
+                    <td className="flex items-center gap-1 p-1">
+                      <div
+                        style={{
+                          backgroundColor: val.hexCode,
+                        }}
+                        className={`h-5 w-5 rounded-full border-3 border-slate-200`}
+                      />
+                      {val.hexCode}
+                    </td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className=" pl-4 pt-1 flex items-center justify-start gap-1">
                       <DeleteTableActions id={val.id} type="color" />
