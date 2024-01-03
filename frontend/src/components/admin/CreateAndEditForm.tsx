@@ -168,8 +168,13 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
                   className="group relative   overflow-hidden rounded-md"
                 >
                   <Image className=" object-cover h-44 w-32" src={val.url} />
-                  <div className="px-1 m-1 rounded-md text-red-600 absolute z-10 top-0 right-0 bg-white hover:bg-slate-200  border-2 border-slate-300 duration-150 cursor-pointer hover:border-slate-500 hidden group-hover:block">
-                    <button
+                  <div className=" absolute z-10 text-red-500 top-0 right-0  hidden group-hover:block">
+                    <Button
+                      variant="faded"
+                      isIconOnly
+                      className="m-1"
+                      color="danger"
+                      size="sm"
                       onClick={() =>
                         setAllImages(
                           allImages.filter((item) => item.url !== val.url)
@@ -177,7 +182,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
                       }
                     >
                       <MdDelete />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );

@@ -35,29 +35,35 @@ export default function CreateColorButtonModal({
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { user } = useAppSelector((state) => state.authReducer);
-  const [currentColor, setCurrentColor] = useState('#C66666');
-
-  const handleChange = (color: { hex: string }) => {
-    setCurrentColor(color.hex);
-  };
+  const [currentColor, setCurrentColor] = useState(
+    colorData ? colorData.hexCode : '#C66666'
+  );
 
   const {
     register,
     formState: { errors },
     handleSubmit,
     reset,
+    getValues,
+    setValue,
   } = useForm<TData>({
     defaultValues: {
-      name: '',
-      hexCode: '',
+      name: colorData?.name,
+      hexCode: currentColor,
     },
     resolver: zodResolver(colorSchema),
   });
 
+  const handleChange = (color: { hex: string }) => {
+    setCurrentColor(color.hex);
+    setValue('hexCode', color.hex);
+  };
+
   const { mutateAsync, isLoading } = usePostColorQueryHook(user!.token);
   const { mutateAsync: editMutateAsync, isLoading: editIsLoading } =
     useUpdateColorQueryHook(user!.token);
-  console.log(currentColor);
+  console.log('Current COlor', currentColor);
+  console.log('getValue', getValues('hexCode'));
   const formSubmit = async (data: TData) => {
     try {
       if (colorData) {
@@ -116,8 +122,8 @@ export default function CreateColorButtonModal({
                           {errors.name?.message}
                         </p>
                         <Input
-                          defaultValue={colorData?.hexCode}
-                          value={colorData ? colorData.hexCode : currentColor}
+                          // defaultValue={currentColor}
+                          value={getValues('hexCode')}
                           size="sm"
                           color={`${
                             errors.hexCode?.message ? 'danger' : 'default'
