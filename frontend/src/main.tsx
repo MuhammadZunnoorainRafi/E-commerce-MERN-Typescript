@@ -52,7 +52,7 @@ const router = createBrowserRouter(
         <Route path="sizes" element={<Size />} />
         <Route path="colors" element={<Colors />} />
         <Route path="products" element={<Products />} />
-        <Route path="products/:slug/edit" element={<EditProduct />} />
+        <Route path="products/:productId/edit" element={<EditProduct />} />
         <Route path="products/create" element={<CreateProduct />} />
       </Route>
     </Route>

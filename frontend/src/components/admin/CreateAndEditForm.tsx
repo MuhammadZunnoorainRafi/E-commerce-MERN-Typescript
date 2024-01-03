@@ -1,18 +1,24 @@
-import { Button, Image, Input, Select, SelectItem } from '@nextui-org/react';
-import { useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
-import { useForm } from 'react-hook-form';
-import { storeId } from '../../utils/getStore';
+import {
+  Button,
+  Checkbox,
+  Image,
+  Input,
+  Select,
+  SelectItem,
+} from '@nextui-org/react';
 import { useState } from 'react';
-import { type IError, errorHandler } from '../../utils/errorHandler';
-import { toast } from 'sonner';
-import { ProductTData, TProduct } from '../../types/productType';
+import { Controller, useForm } from 'react-hook-form';
+import { MdDelete } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useGetCategoryQueryHook } from '../../hooks/categoryReactQueryHooks';
 import { useGetColorQueryHook } from '../../hooks/colorReactQueryHooks';
 import { productEditSchema, productSchema } from '../../schemas/productSchema';
-import { MdDelete } from 'react-icons/md';
+import { ProductTData, TProduct } from '../../types/productType';
+import { errorHandler, type IError } from '../../utils/errorHandler';
+import { storeId } from '../../utils/getStore';
+import { uploadImageCloudinary } from '../../utils/uploadImageCloudinary';
 
 import {
   useCreateProductQuery,
@@ -25,8 +31,6 @@ export type TProductSize = {
 
 function CreateAndEditForm({ product }: { product?: TProduct }) {
   const navigate = useNavigate();
-
-  const queryClient = useQueryClient();
   const { data: category } = useGetCategoryQueryHook();
   const { data: color } = useGetColorQueryHook();
   const [message, setMessage] = useState('');
@@ -40,11 +44,12 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
 
   const existingImg = product?.images?.map((val) => ({ url: val.url }));
   const [allImages, setAllImages] = useState(existingImg || []);
-  console.log(allImages);
   const {
     register,
     formState: { errors },
     handleSubmit,
+    control,
+
     reset,
   } = useForm<ProductTData>({
     defaultValues: {
@@ -52,19 +57,23 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
       categoryId: product?.categoryId,
       sizes: product?.size.map((val) => ({ label: val.label })),
       image: existingImg || [],
+      isShown: product?.isShown,
     },
     resolver: zodResolver(product ? productEditSchema : productSchema),
   });
+  const {
+    mutateAsync: productCreateMutateAsync,
+    isLoading: prodCreateLoading,
+  } = useCreateProductQuery();
+  const {
+    mutateAsync: productUpdateMutateAsync,
+    isLoading: prodUpdateLoading,
+  } = useUpdateProductQuery();
 
-  const { mutateAsync: productCreateMutateAsync, status: prodCreateStatus } =
-    useCreateProductQuery();
-  const { mutateAsync: productUpdateMutateAsync, status: prodUpdateStatus } =
-    useUpdateProductQuery();
-
-  const productCreateStatus =
-    prodCreateStatus !== 'error' && prodCreateStatus !== 'idle';
-  const productUpdateStatus =
-    prodUpdateStatus !== 'error' && prodUpdateStatus !== 'idle';
+  // const prodCreateLoading =
+  //   prodCreateStatus !== 'error' && prodCreateStatus !== 'idle';
+  // const productUpdateStatus =
+  //   prodUpdateStatus !== 'error' && prodUpdateStatus !== 'idle';
 
   const sizeButtonSubmit = (sizeFieldData: { label: string }) => {
     if (sizeField.label === '') {
@@ -100,6 +109,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     image,
     stock,
     categoryId,
+    isShown,
   }: ProductTData) => {
     // const arr = existingImg || [];
     if (image.length > 3) {
@@ -127,7 +137,9 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           image: allImages,
           categoryId,
           sizes: productSize,
+          isShown,
         });
+
         toast.success('Product Updated');
       } else {
         await productCreateMutateAsync({
@@ -142,17 +154,15 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         });
         toast.success('Product Created');
       }
-      queryClient.invalidateQueries({ queryKey: ['product'] });
+      // queryClient.invalidateQueries({ queryKey: ['product'] });
+
       setProductSize([]);
-      if (!productCreateStatus || !productUpdateStatus) {
-        navigate(`/admin/${storeId}/products`);
-      }
+      navigate(`/admin/${storeId}/products`);
       reset();
     } catch (error) {
       toast.error(errorHandler(error as IError));
     }
   };
-
   return (
     <div>
       <form
@@ -221,6 +231,23 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
           />
           <p className="text-sm text-red-500">{errors.description?.message}</p>
         </div>
+        {product && (
+          <div className="space-y-[0.7]">
+            <Controller
+              name="isShown"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  defaultSelected={product.isShown}
+                  onValueChange={field.onChange}
+                >
+                  Product is in Stock
+                </Checkbox>
+              )}
+            />
+          </div>
+        )}
+
         <div className="flex  items-center justify-center gap-4">
           <div className="space-y-[0.7] flex-1">
             <Input
@@ -333,8 +360,8 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         <Button
           type="submit"
           color="primary"
-          isLoading={productCreateStatus || productUpdateStatus}
-          isDisabled={productCreateStatus || productUpdateStatus}
+          isLoading={prodCreateLoading || prodUpdateLoading}
+          isDisabled={prodCreateLoading || prodUpdateLoading}
         >
           {product ? 'Update' : 'Create'}
         </Button>

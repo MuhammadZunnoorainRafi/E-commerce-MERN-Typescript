@@ -41,4 +41,5 @@ export const productEditSchema = z.object({
   categoryId: z.string().nonempty('Select Category'),
   colorId: z.string().nonempty('Select Color'),
   sizes: z.any().refine((val) => val.length > 0, 'Enter Sizes'),
+  isShown: z.boolean().optional(),
 });

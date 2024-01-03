@@ -4,7 +4,6 @@ import prismaDB from '../config/prismaDB';
 import { productSchema } from '../utils/schemas';
 import { fromZodError } from 'zod-validation-error';
 import { IRequest } from '../middlewares/authMiddleware';
-import { genSlug } from '../utils/genSlug';
 
 export const createProductController = asyncHandler(
   async (req: IRequest, res: Response) => {
@@ -34,7 +33,7 @@ export const createProductController = asyncHandler(
       data: {
         name,
         storeId: req.params.id,
-        slug: genSlug(name),
+        slug: name,
         images: {
           createMany: {
             // data: [...image.map((val: { url: string }) => val.url)],
@@ -83,8 +82,8 @@ export const updateProductController = asyncHandler(
       colorId,
       description,
       stock,
+      isShown,
     } = validation.data;
-
     await prismaDB.product.update({
       where: {
         id: req.body.id,
@@ -92,7 +91,7 @@ export const updateProductController = asyncHandler(
       data: {
         name,
         storeId: req.params.id,
-        slug: genSlug(name!),
+        slug: name,
         images: {
           deleteMany: {},
         },
@@ -104,8 +103,10 @@ export const updateProductController = asyncHandler(
         price,
         description,
         colorId,
+        isShown,
       },
     });
+
     const updatedProduct = await prismaDB.product.update({
       where: {
         id: req.body.id,
@@ -123,6 +124,7 @@ export const updateProductController = asyncHandler(
         },
       },
     });
+
     if (updatedProduct) {
       res.status(200).send('Product is updated');
     } else {
@@ -155,7 +157,7 @@ export const getSingleProductController = asyncHandler(
   async (req: Request, res: Response) => {
     const singleProduct = await prismaDB.product.findUnique({
       where: {
-        slug: req.params.slug,
+        id: req.params.productId,
       },
       include: {
         category: true,

@@ -6,6 +6,8 @@ import { useGetProductQuery } from '../../hooks/productReactQueryHooks';
 import { TProduct } from '../../types/productType';
 import { storeId } from '../../utils/getStore';
 import { FiEdit } from 'react-icons/fi';
+import { ImCross } from 'react-icons/im';
+import { FaCheckSquare } from 'react-icons/fa';
 
 function Products() {
   const { isLoading, data } = useGetProductQuery();
@@ -36,6 +38,7 @@ function Products() {
               <th className="p-2 rounded-l-lg">Name</th>
               <th className="p-2">Category</th>
               <th className="p-2 ">Color</th>
+              <th className="p-2 ">In Stock</th>
               <th className="p-2 ">Date</th>
               <th className="p-2 rounded-r-lg">Actions</th>
             </tr>
@@ -50,6 +53,7 @@ function Products() {
                 </td>
                 <td></td>
                 <td></td>
+                <td></td>
               </tr>
             ) : !data || data.length === 0 ? (
               <tr>
@@ -61,6 +65,8 @@ function Products() {
                     No Data Yet!
                   </p>
                 </td>
+                <td></td>
+                <td></td>
                 <td></td>
               </tr>
             ) : (
@@ -79,13 +85,24 @@ function Products() {
                     </td>
                     <td className="p-1">{val.category.name}</td>
                     <td className="p-1">{val.color.name}</td>
+                    <td
+                      className={`p-1 pl-6 ${
+                        val.isShown === true ? 'text-green-500' : 'text-red-500'
+                      } `}
+                    >
+                      {val.isShown === true ? (
+                        <FaCheckSquare size={25} />
+                      ) : (
+                        <ImCross />
+                      )}
+                    </td>
                     <td className="p-1">{moment(val.createdAt).format('L')}</td>
                     <td className="pl-4 pt-1 ">
                       <div className="flex items-center justify-start gap-1">
                         <DeleteTableActions id={val.id} type="product" />
                         <Link
                           className="hover:text-cyan-600"
-                          to={`/admin/${storeId}/products/${val.slug}/edit`}
+                          to={`/admin/${storeId}/products/${val.id}/edit`}
                         >
                           <FiEdit />
                         </Link>

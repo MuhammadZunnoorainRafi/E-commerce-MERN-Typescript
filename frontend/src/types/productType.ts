@@ -32,4 +32,5 @@ export type ProductTData = {
   sizes: {
     label: string;
   }[];
+  isShown?: boolean;
 };

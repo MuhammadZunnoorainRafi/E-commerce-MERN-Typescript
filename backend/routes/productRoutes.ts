@@ -13,6 +13,6 @@ productRoute.post('/:id/product', protect, createProductController);
 productRoute.put('/:id/product', protect, updateProductController);
 productRoute.delete('/:id/product', protect, deleteProductController);
 productRoute.get('/:id/product', getProductController);
-productRoute.get('/:id/product/:slug', getSingleProductController);
+productRoute.get('/:id/product/:productId', getSingleProductController);
 
 export default productRoute;

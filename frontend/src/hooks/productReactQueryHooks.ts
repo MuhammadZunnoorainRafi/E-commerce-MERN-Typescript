@@ -34,6 +34,7 @@ export const useDeleteProductQuery = () => {
 };
 
 export const useCreateProductQuery = () => {
+  const queryClient = useQueryClient();
   const { user } = useAppSelector((store) => store.authReducer);
   return useMutation({
     mutationFn: async (data: ProductTData) => {
@@ -50,10 +51,14 @@ export const useCreateProductQuery = () => {
       );
       return res.data;
     },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['product'] });
+    },
   });
 };
 
 export const useUpdateProductQuery = () => {
+  const queryClient = useQueryClient();
   const { user } = useAppSelector((store) => store.authReducer);
   return useMutation({
     mutationFn: async (data: ProductTData & { id: string }) => {
@@ -68,6 +73,9 @@ export const useUpdateProductQuery = () => {
         config
       );
       return res.data;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['product'] });
     },
   });
 };

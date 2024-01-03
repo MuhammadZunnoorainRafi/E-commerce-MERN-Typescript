@@ -9,12 +9,14 @@ function EditProduct() {
   const params = useParams();
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['Product', params.slug],
+    queryKey: ['Product', params.productId],
     queryFn: async () => {
       const res = await axios.get(
-        `/api/admin/${storeId}/product/${params.slug}`
+        `/api/admin/${storeId}/product/${params.productId}`
       );
-      queryClient.invalidateQueries({ queryKey: ['Product', params.slug] });
+      queryClient.invalidateQueries({
+        queryKey: ['Product', params.productId],
+      });
       return res.data;
     },
   });
