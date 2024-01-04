@@ -28,7 +28,7 @@ export const useDeleteProductQuery = () => {
         },
       };
       await axios.delete(`/api/admin/${storeId}/product`, config);
-      queryClient.invalidateQueries({ queryKey: ['product'] });
+      queryClient.invalidateQueries({ queryKey: ['product'], exact: true });
     },
   });
 };
@@ -52,7 +52,7 @@ export const useCreateProductQuery = () => {
       return res.data;
     },
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['product'] });
+      queryClient.invalidateQueries({ queryKey: ['product'], exact: true });
     },
   });
 };

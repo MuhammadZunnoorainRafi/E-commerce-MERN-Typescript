@@ -26,6 +26,7 @@ import Profile from './pages/Profile.tsx';
 import Size from './pages/(admin)/Size.tsx';
 import CreateProduct from './pages/(admin)/CreateProduct.tsx';
 import EditProduct from './pages/(admin)/EditProduct.tsx';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development' ? 'http://localhost:4000/' : '';
@@ -65,6 +66,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <NextUIProvider>
           <RouterProvider router={router} />
         </NextUIProvider>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </Provider>
   </React.StrictMode>

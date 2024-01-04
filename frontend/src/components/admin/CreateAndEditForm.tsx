@@ -37,7 +37,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
   const [productSize, setProductSize] = useState<TProductSize | []>(
     product?.size ? product.size.map((val) => ({ label: val.label })) : []
   );
-
   const [sizeField, setSizeField] = useState({
     label: '',
   });
@@ -69,7 +68,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     mutateAsync: productUpdateMutateAsync,
     isLoading: prodUpdateLoading,
   } = useUpdateProductQuery();
-
   // const prodCreateLoading =
   //   prodCreateStatus !== 'error' && prodCreateStatus !== 'idle';
   // const productUpdateStatus =
@@ -100,7 +98,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
     }
     // }
   };
-
   const formSubmit = async ({
     name,
     price,
@@ -154,7 +151,6 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
         });
         toast.success('Product Created');
       }
-      // queryClient.invalidateQueries({ queryKey: ['product'] });
 
       setProductSize([]);
       navigate(`/admin/${storeId}/products`);
@@ -238,6 +234,7 @@ function CreateAndEditForm({ product }: { product?: TProduct }) {
               control={control}
               render={({ field }) => (
                 <Checkbox
+                  defaultValue={product.isShown}
                   defaultSelected={product.isShown}
                   onValueChange={field.onChange}
                 >
